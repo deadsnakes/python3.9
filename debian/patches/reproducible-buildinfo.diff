@@ -1,0 +1,23 @@
+From: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Date: Thu, 14 Feb 2019 18:59:15 -0800
+Subject: reproducible-buildinfo
+
+# DP: Build getbuildinfo.o with DATE/TIME values when defined
+# DP: Build getbuildinfo.o with DATE/TIME values when defined
+---
+ Makefile.pre.in | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index d0197ce..f6800f6 100644
+--- a/Makefile.pre.in
++++ b/Makefile.pre.in
+@@ -756,6 +756,8 @@ Modules/getbuildinfo.o: $(PARSER_OBJS) \
+ 	      -DGITVERSION="\"`LC_ALL=C $(GITVERSION)`\"" \
+ 	      -DGITTAG="\"`LC_ALL=C $(GITTAG)`\"" \
+ 	      -DGITBRANCH="\"`LC_ALL=C $(GITBRANCH)`\"" \
++	      $(if $(BUILD_DATE),-DDATE='"$(BUILD_DATE)"') \
++	      $(if $(BUILD_TIME),-DTIME='"$(BUILD_TIME)"') \
+ 	      -o $@ $(srcdir)/Modules/getbuildinfo.c
+ 
+ Modules/getpath.o: $(srcdir)/Modules/getpath.c Makefile

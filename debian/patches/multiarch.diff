@@ -1,0 +1,62 @@
+From: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Date: Thu, 14 Feb 2019 18:59:14 -0800
+Subject: multiarch
+
+---
+ Lib/distutils/sysconfig.py | 3 +++
+ Lib/sysconfig.py           | 6 ++++++
+ Makefile.pre.in            | 3 ++-
+ 3 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/Lib/distutils/sysconfig.py b/Lib/distutils/sysconfig.py
+index b49b506..6f3f30c 100644
+--- a/Lib/distutils/sysconfig.py
++++ b/Lib/distutils/sysconfig.py
+@@ -111,6 +111,9 @@ def get_python_inc(plat_specific=0, prefix=None):
+                 incdir = os.path.join(get_config_var('srcdir'), 'Include')
+                 return os.path.normpath(incdir)
+         python_dir = 'python' + get_python_version() + build_flags
++        if not python_build and plat_specific:
++            import sysconfig
++            return sysconfig.get_path('platinclude')
+         return os.path.join(prefix, "include", python_dir)
+     elif os.name == "nt":
+         if python_build:
+diff --git a/Lib/sysconfig.py b/Lib/sysconfig.py
+index b9e2faf..d941ca9 100644
+--- a/Lib/sysconfig.py
++++ b/Lib/sysconfig.py
+@@ -558,6 +558,12 @@ def get_config_vars(*args):
+         # the init-function.
+         _CONFIG_VARS['userbase'] = _getuserbase()
+ 
++        multiarch = get_config_var('MULTIARCH')
++        if multiarch:
++            _CONFIG_VARS['multiarchsubdir'] = '/' + multiarch
++        else:
++            _CONFIG_VARS['multiarchsubdir'] = ''
++
+         # Always convert srcdir to an absolute path
+         srcdir = _CONFIG_VARS.get('srcdir', _PROJECT_BASE)
+         if os.name == 'posix':
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index 05b8ec9..d0197ce 100644
+--- a/Makefile.pre.in
++++ b/Makefile.pre.in
+@@ -784,6 +784,7 @@ Modules/signalmodule.o: $(srcdir)/Modules/signalmodule.c $(srcdir)/Modules/posix
+ 
+ Python/dynload_shlib.o: $(srcdir)/Python/dynload_shlib.c Makefile
+ 	$(CC) -c $(PY_CORE_CFLAGS) \
++		$(if $(MULTIARCH),-DMULTIARCH='"$(MULTIARCH)"') \
+ 		-DSOABI='"$(SOABI)"' \
+ 		-o $@ $(srcdir)/Python/dynload_shlib.c
+ 
+@@ -1561,7 +1562,7 @@ inclinstall:
+ LIBPL=		@LIBPL@
+ 
+ # pkgconfig directory
+-LIBPC=		$(LIBDIR)/pkgconfig
++LIBPC=		$(LIBDIR)/$(MULTIARCH)/pkgconfig
+ 
+ libainstall:	@DEF_MAKE_RULE@ python-config
+ 	@for i in $(LIBDIR) $(LIBPL) $(LIBPC); \

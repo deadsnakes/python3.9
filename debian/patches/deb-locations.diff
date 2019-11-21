@@ -1,0 +1,39 @@
+From: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Date: Thu, 14 Feb 2019 18:59:13 -0800
+Subject: deb-locations
+
+# DP: adjust locations of directories to debian policy
+# DP: adjust locations of directories to debian policy
+---
+ Lib/pydoc.py    | 4 ++++
+ Misc/python.man | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/Lib/pydoc.py b/Lib/pydoc.py
+index e32fdf7..e48d084 100755
+--- a/Lib/pydoc.py
++++ b/Lib/pydoc.py
+@@ -31,6 +31,10 @@ to a file named "<name>.html".
+ 
+ Module docs for core modules are assumed to be in
+ 
++    /usr/share/doc/pythonX.Y/html/library
++
++if the pythonX.Y-doc package is installed or in
++
+     https://docs.python.org/X.Y/library/
+ 
+ This can be overridden by setting the PYTHONDOCS environment variable
+diff --git a/Misc/python.man b/Misc/python.man
+index 3aa9f1f..a527910 100644
+--- a/Misc/python.man
++++ b/Misc/python.man
+@@ -337,7 +337,7 @@ exception).  Error messages are written to stderr.
+ These are subject to difference depending on local installation
+ conventions; ${prefix} and ${exec_prefix} are installation-dependent
+ and should be interpreted as for GNU software; they may be the same.
+-The default for both is \fI/usr/local\fP.
++On Debian GNU/{Hurd,Linux} the default for both is \fI/usr\fP.
+ .IP \fI${exec_prefix}/bin/python\fP
+ Recommended location of the interpreter.
+ .PP

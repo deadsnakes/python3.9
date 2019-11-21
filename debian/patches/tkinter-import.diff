@@ -1,0 +1,26 @@
+From: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Date: Thu, 14 Feb 2019 18:59:14 -0800
+Subject: tkinter-import
+
+# DP: suggest installation of python-tk package on failing _tkinter import
+# DP: suggest installation of python-tk package on failing _tkinter import
+---
+ Lib/tkinter/__init__.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/Lib/tkinter/__init__.py b/Lib/tkinter/__init__.py
+index a3378d0..8242f4d 100644
+--- a/Lib/tkinter/__init__.py
++++ b/Lib/tkinter/__init__.py
+@@ -34,7 +34,10 @@ import enum
+ import sys
+ import types
+ 
+-import _tkinter # If this fails your Python may not be configured for Tk
++try:
++    import _tkinter
++except ImportError as msg:
++    raise ImportError(str(msg) + ', please install the python3-tk package')
+ TclError = _tkinter.TclError
+ from tkinter.constants import *
+ import re
