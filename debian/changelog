@@ -1,3 +1,9 @@
+python3.9 (3.9.0~a1-1+xenial3) xenial; urgency=medium
+
+  * Fix i386 build.
+
+ -- Anthony Sottile <asottile@umich.edu>  Wed, 20 Nov 2019 22:09:00 -0800
+
 python3.9 (3.9.0~a1-1+xenial2) xenial; urgency=medium
 
   * Fix i386 and armhf builds.
