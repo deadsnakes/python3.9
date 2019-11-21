@@ -1659,9 +1659,6 @@
  _Py_write@Base @SVER@
  _Py_write_noraise@Base @SVER@
 
- (arch=!alpha !amd64 !arm64 !ia64 !mips64 !mips64el !mips64r6 !mips64r6el !ppc64el !riscv64 !kfreebsd-amd64)_PySHA3_KeccakP1600_AddByte@Base @SVER@
- (arch=!alpha !amd64 !arm64 !ia64 !mips64 !mips64el !mips64r6 !mips64r6el !ppc64el !kfreebsd-amd64 !riscv64)_PySHA3_KeccakP1600_Permute_Nrounds@Base @SVER@
- (arch=!alpha !amd64 !arm64 !ia64 !mips64 !mips64el !mips64r6 !mips64r6el !ppc64el !kfreebsd-amd64 !riscv64)_PySHA3_KeccakP1600_SetBytesInLaneToZero@Base @SVER@
  (arch=i386 hurd-i386 kfreebsd-i386 m68k)_Py_force_double@Base @SVER@
  (arch=amd64 i386 hurd-i386 kfreebsd-i386)_Py_get_387controlword@Base @SVER@
  (arch=amd64 i386 hurd-i386 kfreebsd-i386)_Py_set_387controlword@Base @SVER@
