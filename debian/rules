@@ -82,9 +82,9 @@ derivative      := $(shell \
 	elif dpkg-vendor --derives-from Debian; then echo Debian; \
 	else echo Unknown; fi)
 
-VER=3.8
-SVER=3.8.0
-NVER=3.9
+VER=3.9
+SVER=3.9.0~a1
+NVER=3.10
 PVER=python$(VER)
 EXT_VER=$(subst .,,$(VER))
 PRIORITY=$(shell echo $(VER) | tr -d '.')0

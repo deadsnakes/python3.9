@@ -26,7 +26,7 @@ fi
 ls -la $ADTTMP
 
 tmphome=$ADTTMP/home
-mkdir -p $tmphome/.local/lib/python3.8/site-packages
+mkdir -p $tmphome/.local/lib/python3.9/site-packages
 if [ -n "$su_user" ]; then
   chmod -R go+rx $ADTTMP
   chown -R $su_user:nogroup $tmphome
@@ -36,7 +36,7 @@ debian_dir=$(dirname $(dirname $0))
 
 # no root access needed after this point
 
-TESTPYTHON="python3.8 -W default -bb -E -R -m test"
+TESTPYTHON="python3.9 -W default -bb -E -R -m test"
 TESTEXCLUSIONS="-x"
 
 . $debian_dir/tests/test-common.sh
@@ -53,7 +53,7 @@ EXTRAENV="env -u https_proxy -u http_proxy -u no_proxy HOME=$tmphome"
 
 script=$debian_dir/script.py
 if [ -f "$script" ]; then
-  cmd="$EXTRAENV python3.8 $script \"$log\" \"$TESTPYTHON $TESTOPTS $TESTEXCLUSIONS\""
+  cmd="$EXTRAENV python3.9 $script \"$log\" \"$TESTPYTHON $TESTOPTS $TESTEXCLUSIONS\""
 else
   cmd="$EXTRAENV $TESTPYTHON $TESTOPTS $TESTEXCLUSIONS"
 fi
