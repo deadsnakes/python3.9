@@ -10,7 +10,7 @@ Subject: older sphinx v2
  4 files changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/Doc/c-api/typeobj.rst b/Doc/c-api/typeobj.rst
-index b4ffd6b..9dcdc20 100644
+index 7b205c0..b8d6c6f 100644
 --- a/Doc/c-api/typeobj.rst
 +++ b/Doc/c-api/typeobj.rst
 @@ -34,7 +34,6 @@ Quick Reference

@@ -9,11 +9,11 @@ Subject: lib-argparse
  1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/Lib/argparse.py b/Lib/argparse.py
-index 94e1b8a..6a59a1d 100644
+index 5d3ce2a..a08afd7 100644
 --- a/Lib/argparse.py
 +++ b/Lib/argparse.py
-@@ -90,7 +90,16 @@ import re as _re
- import shutil as _shutil
+@@ -89,7 +89,16 @@ import os as _os
+ import re as _re
  import sys as _sys
  
 -from gettext import gettext as _, ngettext
