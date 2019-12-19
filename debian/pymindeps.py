@@ -129,7 +129,7 @@ excluded_imports = {
     #'socket': set(('_ssl',)),
     '_sitebuiltins': set(('pydoc',)),
     'subprocess': set(('dummy_threading',)),
-    'sysconfig': set(('pprint','_osx_support')),
+    'sysconfig': set(('pprint','_osx_support','_aix_support')),
     'tempfile': set(('_dummy_thread', 'shutil')),
     'functools': set(('typing',)),
     'platform': set(('distutils','plistlib')),
