@@ -50,7 +50,6 @@
  PyBytes_Size@Base @SVER@
  PyBytes_Type@Base @SVER@
  PyCFunction_Call@Base @SVER@
- PyCFunction_ClearFreeList@Base @SVER@
  PyCFunction_GetFlags@Base @SVER@
  PyCFunction_GetFunction@Base @SVER@
  PyCFunction_GetSelf@Base @SVER@
@@ -539,7 +538,6 @@
  PyMemoryView_GetContiguous@Base @SVER@
  PyMemoryView_Type@Base @SVER@
  PyMethodDescr_Type@Base @SVER@
- PyMethod_ClearFreeList@Base @SVER@
  PyMethod_Function@Base @SVER@
  PyMethod_New@Base @SVER@
  PyMethod_Self@Base @SVER@
@@ -941,7 +939,6 @@
  PyUnicode_AsWideChar@Base @SVER@
  PyUnicode_AsWideCharString@Base @SVER@
  PyUnicode_BuildEncodingMap@Base @SVER@
- PyUnicode_ClearFreeList@Base @SVER@
  PyUnicode_Compare@Base @SVER@
  PyUnicode_CompareWithASCIIString@Base @SVER@
  PyUnicode_Concat@Base @SVER@
@@ -1251,7 +1248,7 @@
  _PyFunction_Vectorcall@Base 3.8.0~b1
  _PyGC_CollectIfEnabled@Base @SVER@
  _PyGC_CollectNoFail@Base @SVER@
- _PyGC_Initialize@Base @SVER@
+ _PyGC_InitState@Base 3.9.0~a2
  _PyGILState_GetInterpreterStateUnsafe@Base @SVER@
  _PyGILState_Reinit@Base @SVER@
  _PyGen_FetchStopIterationValue@Base @SVER@
@@ -1568,6 +1565,7 @@
  _Py_IsCoreInitialized@Base @SVER@
  _Py_IsFinalizing@Base @SVER@
  _Py_IsLocaleCoercionTarget@Base @SVER@
+ _Py_IsMainInterpreter@Base 3.9.0~a2
  _Py_LegacyLocaleDetected@Base @SVER@
  _Py_Mangle@Base @SVER@
  _Py_NoneStruct@Base @SVER@
