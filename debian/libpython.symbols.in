@@ -1205,6 +1205,7 @@
  _PyErr_Format@Base 3.8.0~b1
  _PyErr_FormatFromCause@Base @SVER@
  _PyErr_FormatFromCauseTstate@Base 3.9.0~a1
+ _PyErr_GetExcInfo@Base 3.9.0~a3
  _PyErr_NoMemory@Base 3.9.0~a1
  _PyErr_NormalizeException@Base 3.8.0~b1
  _PyErr_Print@Base 3.8.0~b1
@@ -1592,6 +1593,7 @@
  _Py_add_one_to_index_C@Base @SVER@
  _Py_add_one_to_index_F@Base @SVER@
  _Py_ascii_whitespace@Base @SVER@
+ _Py_bit_length@Base 3.9.0~a3
  _Py_c_abs@Base @SVER@
  _Py_c_diff@Base @SVER@
  _Py_c_neg@Base @SVER@
