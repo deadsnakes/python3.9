@@ -13,10 +13,10 @@ Subject: locale-module
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Lib/locale.py b/Lib/locale.py
-index dd8a085..cfde2e4 100644
+index 1a4e9f6..dfcfba5 100644
 --- a/Lib/locale.py
 +++ b/Lib/locale.py
-@@ -1407,8 +1407,8 @@ locale_alias = {
+@@ -1409,8 +1409,8 @@ locale_alias = {
      'ug_cn':                                'ug_CN.UTF-8',
      'uk':                                   'uk_UA.KOI8-U',
      'uk_ua':                                'uk_UA.KOI8-U',
