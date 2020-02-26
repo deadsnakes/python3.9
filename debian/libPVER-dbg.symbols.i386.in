@@ -3,7 +3,6 @@ libpython@VER@d.so.1.0 libpython@VER@-dbg #MINVER#
  _Py_force_double@Base @SVER@
  _Py_get_387controlword@Base @SVER@
  _Py_set_387controlword@Base @SVER@
- _PyDebug_PrintTotalRefs@Base @SVER@
  _PyObject_DebugMallocStats@Base @SVER@
  _PySet_Dummy@Base @SVER@
  _PyUnicode_CheckConsistency@Base @SVER@
