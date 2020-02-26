@@ -39,6 +39,7 @@
 #  error "ceval.c must be build with Py_BUILD_CORE define for best performance"
 #endif
 
+_Py_IDENTIFIER(__name__);
 
 /* Forward declarations */
 Py_LOCAL_INLINE(PyObject *) call_function(
@@ -302,9 +303,7 @@ PyEval_ReleaseLock(void)
 void
 PyEval_AcquireThread(PyThreadState *tstate)
 {
-    if (tstate == NULL) {
-        Py_FatalError("PyEval_AcquireThread: NULL new thread state");
-    }
+    assert(tstate != NULL);
 
     _PyRuntimeState *runtime = tstate->interp->runtime;
     struct _ceval_runtime_state *ceval = &runtime->ceval;
@@ -321,9 +320,7 @@ PyEval_AcquireThread(PyThreadState *tstate)
 void
 PyEval_ReleaseThread(PyThreadState *tstate)
 {
-    if (tstate == NULL) {
-        Py_FatalError("PyEval_ReleaseThread: NULL thread state");
-    }
+    assert(tstate != NULL);
 
     _PyRuntimeState *runtime = tstate->interp->runtime;
     PyThreadState *new_tstate = _PyThreadState_Swap(&runtime->gilstate, NULL);
@@ -385,12 +382,10 @@ PyEval_SaveThread(void)
 void
 PyEval_RestoreThread(PyThreadState *tstate)
 {
+    assert(tstate != NULL);
+
     _PyRuntimeState *runtime = tstate->interp->runtime;
     struct _ceval_runtime_state *ceval = &runtime->ceval;
-
-    if (tstate == NULL) {
-        Py_FatalError("PyEval_RestoreThread: NULL tstate");
-    }
     assert(gil_created(&ceval->gil));
 
     int err = errno;
@@ -926,21 +921,23 @@ _PyEval_EvalFrameDefault(PyFrameObject *f, int throwflag)
 
 */
 
+#define PREDICT_ID(op)          PRED_##op
+
 #if defined(DYNAMIC_EXECUTION_PROFILE) || USE_COMPUTED_GOTOS
-#define PREDICT(op)             if (0) goto PRED_##op
+#define PREDICT(op)             if (0) goto PREDICT_ID(op)
 #else
 #define PREDICT(op) \
-    do{ \
+    do { \
         _Py_CODEUNIT word = *next_instr; \
         opcode = _Py_OPCODE(word); \
-        if (opcode == op){ \
+        if (opcode == op) { \
             oparg = _Py_OPARG(word); \
             next_instr++; \
-            goto PRED_##op; \
+            goto PREDICT_ID(op); \
         } \
     } while(0)
 #endif
-#define PREDICTED(op)           PRED_##op:
+#define PREDICTED(op)           PREDICT_ID(op):
 
 
 /* Stack manipulation macros */
@@ -1879,7 +1876,7 @@ main_loop:
                 Py_DECREF(value);
                 goto error;
             }
-            res = _PyObject_CallOneArg(hook, value);
+            res = PyObject_CallOneArg(hook, value);
             Py_DECREF(value);
             if (res == NULL)
                 goto error;
@@ -2138,7 +2135,7 @@ main_loop:
             PyObject *val = POP();
             PyObject *tb = POP();
             assert(PyExceptionClass_Check(exc));
-            PyErr_Restore(exc, val, tb);
+            _PyErr_Restore(tstate, exc, val, tb);
             goto exception_unwind;
         }
 
@@ -2638,9 +2635,9 @@ main_loop:
             PyObject *none_val = _PyList_Extend((PyListObject *)list, iterable);
             if (none_val == NULL) {
                 if (_PyErr_ExceptionMatches(tstate, PyExc_TypeError) &&
-                   (iterable->ob_type->tp_iter == NULL && !PySequence_Check(iterable)))
+                   (Py_TYPE(iterable)->tp_iter == NULL && !PySequence_Check(iterable)))
                 {
-                    PyErr_Clear();
+                    _PyErr_Clear(tstate);
                     _PyErr_Format(tstate, PyExc_TypeError,
                           "Value after * must be an iterable, not %.200s",
                           Py_TYPE(iterable)->tp_name);
@@ -2801,49 +2798,32 @@ main_loop:
             DISPATCH();
         }
 
-        case TARGET(BUILD_MAP_UNPACK): {
-            Py_ssize_t i;
-            PyObject *sum = PyDict_New();
-            if (sum == NULL)
-                goto error;
-
-            for (i = oparg; i > 0; i--) {
-                PyObject *arg = PEEK(i);
-                if (PyDict_Update(sum, arg) < 0) {
-                    if (_PyErr_ExceptionMatches(tstate, PyExc_AttributeError)) {
-                        _PyErr_Format(tstate, PyExc_TypeError,
-                                      "'%.200s' object is not a mapping",
-                                      arg->ob_type->tp_name);
-                    }
-                    Py_DECREF(sum);
-                    goto error;
+        case TARGET(DICT_UPDATE): {
+            PyObject *update = POP();
+            PyObject *dict = PEEK(oparg);
+            if (PyDict_Update(dict, update) < 0) {
+                if (_PyErr_ExceptionMatches(tstate, PyExc_AttributeError)) {
+                    _PyErr_Format(tstate, PyExc_TypeError,
+                                    "'%.200s' object is not a mapping",
+                                    Py_TYPE(update)->tp_name);
                 }
+                Py_DECREF(update);
+                goto error;
             }
-
-            while (oparg--)
-                Py_DECREF(POP());
-            PUSH(sum);
+            Py_DECREF(update);
             DISPATCH();
         }
 
-        case TARGET(BUILD_MAP_UNPACK_WITH_CALL): {
-            Py_ssize_t i;
-            PyObject *sum = PyDict_New();
-            if (sum == NULL)
+        case TARGET(DICT_MERGE): {
+            PyObject *update = POP();
+            PyObject *dict = PEEK(oparg);
+
+            if (_PyDict_MergeEx(dict, update, 2) < 0) {
+                format_kwargs_error(tstate, PEEK(2 + oparg), update);
+                Py_DECREF(update);
                 goto error;
-
-            for (i = oparg; i > 0; i--) {
-                PyObject *arg = PEEK(i);
-                if (_PyDict_MergeEx(sum, arg, 2) < 0) {
-                    Py_DECREF(sum);
-                    format_kwargs_error(tstate, PEEK(2 + oparg), arg);
-                    goto error;
-                }
             }
-
-            while (oparg--)
-                Py_DECREF(POP());
-            PUSH(sum);
+            Py_DECREF(update);
             PREDICT(CALL_FUNCTION_EX);
             DISPATCH();
         }
@@ -3180,7 +3160,7 @@ main_loop:
             PREDICTED(FOR_ITER);
             /* before: [iter]; after: [iter, iter()] *or* [] */
             PyObject *iter = TOP();
-            PyObject *next = (*iter->ob_type->tp_iternext)(iter);
+            PyObject *next = (*Py_TYPE(iter)->tp_iternext)(iter);
             if (next != NULL) {
                 PUSH(next);
                 PREDICT(STORE_FAST);
@@ -3293,7 +3273,7 @@ main_loop:
             assert(!PyLong_Check(exc));
             exit_func = PEEK(7);
             PyObject *stack[4] = {NULL, exc, val, tb};
-            res = _PyObject_Vectorcall(exit_func, stack + 1,
+            res = PyObject_Vectorcall(exit_func, stack + 1,
                     3 | PY_VECTORCALL_ARGUMENTS_OFFSET, NULL);
             if (res == NULL)
                 goto error;
@@ -4357,7 +4337,7 @@ do_raise(PyThreadState *tstate, PyObject *exc, PyObject *cause)
     }
 
     _PyErr_SetObject(tstate, type, value);
-    /* PyErr_SetObject incref's its arguments */
+    /* _PyErr_SetObject incref's its arguments */
     Py_DECREF(value);
     Py_DECREF(type);
     return 0;
@@ -4391,11 +4371,11 @@ unpack_iterable(PyThreadState *tstate, PyObject *v,
     it = PyObject_GetIter(v);
     if (it == NULL) {
         if (_PyErr_ExceptionMatches(tstate, PyExc_TypeError) &&
-            v->ob_type->tp_iter == NULL && !PySequence_Check(v))
+            Py_TYPE(v)->tp_iter == NULL && !PySequence_Check(v))
         {
             _PyErr_Format(tstate, PyExc_TypeError,
                           "cannot unpack non-iterable %.200s object",
-                          v->ob_type->tp_name);
+                          Py_TYPE(v)->tp_name);
         }
         return 0;
     }
@@ -4458,7 +4438,7 @@ unpack_iterable(PyThreadState *tstate, PyObject *v,
         *--sp = PyList_GET_ITEM(l, ll - j);
     }
     /* Resize the list. */
-    Py_SIZE(l) = ll - argcntafter;
+    Py_SET_SIZE(l, ll - argcntafter);
     Py_DECREF(it);
     return 1;
 
@@ -4812,7 +4792,7 @@ PyEval_GetFuncName(PyObject *func)
     else if (PyCFunction_Check(func))
         return ((PyCFunctionObject*)func)->m_ml->ml_name;
     else
-        return func->ob_type->tp_name;
+        return Py_TYPE(func)->tp_name;
 }
 
 const char *
@@ -4868,7 +4848,7 @@ trace_call_function(PyThreadState *tstate,
 {
     PyObject *x;
     if (PyCFunction_Check(func)) {
-        C_TRACE(x, _PyObject_Vectorcall(func, args, nargs, kwnames));
+        C_TRACE(x, PyObject_Vectorcall(func, args, nargs, kwnames));
         return x;
     }
     else if (Py_TYPE(func) == &PyMethodDescr_Type && nargs > 0) {
@@ -4884,13 +4864,13 @@ trace_call_function(PyThreadState *tstate,
         if (func == NULL) {
             return NULL;
         }
-        C_TRACE(x, _PyObject_Vectorcall(func,
+        C_TRACE(x, PyObject_Vectorcall(func,
                                         args+1, nargs-1,
                                         kwnames));
         Py_DECREF(func);
         return x;
     }
-    return _PyObject_Vectorcall(func, args, nargs | PY_VECTORCALL_ARGUMENTS_OFFSET, kwnames);
+    return PyObject_Vectorcall(func, args, nargs | PY_VECTORCALL_ARGUMENTS_OFFSET, kwnames);
 }
 
 /* Issue #29227: Inline call_function() into _PyEval_EvalFrameDefault()
@@ -4909,7 +4889,7 @@ call_function(PyThreadState *tstate, PyObject ***pp_stack, Py_ssize_t oparg, PyO
         x = trace_call_function(tstate, func, stack, nargs, kwnames);
     }
     else {
-        x = _PyObject_Vectorcall(func, stack, nargs | PY_VECTORCALL_ARGUMENTS_OFFSET, kwnames);
+        x = PyObject_Vectorcall(func, stack, nargs | PY_VECTORCALL_ARGUMENTS_OFFSET, kwnames);
     }
 
     assert((x != NULL) ^ (_PyErr_Occurred(tstate) != NULL));
@@ -5055,7 +5035,6 @@ static PyObject *
 import_from(PyThreadState *tstate, PyObject *v, PyObject *name)
 {
     PyObject *x;
-    _Py_IDENTIFIER(__name__);
     PyObject *fullmodname, *pkgname, *pkgpath, *pkgname_or_unknown, *errmsg;
 
     if (_PyObject_LookupAttr(v, name, &x) != 0) {
@@ -5131,7 +5110,6 @@ import_all_from(PyThreadState *tstate, PyObject *locals, PyObject *v)
 {
     _Py_IDENTIFIER(__all__);
     _Py_IDENTIFIER(__dict__);
-    _Py_IDENTIFIER(__name__);
     PyObject *all, *dict, *name, *value;
     int skip_leading_underscores = 0;
     int pos, err;
@@ -5221,11 +5199,11 @@ import_all_from(PyThreadState *tstate, PyObject *locals, PyObject *v)
 static int
 check_args_iterable(PyThreadState *tstate, PyObject *func, PyObject *args)
 {
-    if (args->ob_type->tp_iter == NULL && !PySequence_Check(args)) {
+    if (Py_TYPE(args)->tp_iter == NULL && !PySequence_Check(args)) {
         /* check_args_iterable() may be called with a live exception:
          * clear it to prevent calling _PyObject_FunctionStr() with an
          * exception set. */
-        PyErr_Clear();
+        _PyErr_Clear(tstate);
         PyObject *funcstr = _PyObject_FunctionStr(func);
         if (funcstr != NULL) {
             _PyErr_Format(tstate, PyExc_TypeError,
@@ -5248,7 +5226,7 @@ format_kwargs_error(PyThreadState *tstate, PyObject *func, PyObject *kwargs)
      * is not a mapping.
      */
     if (_PyErr_ExceptionMatches(tstate, PyExc_AttributeError)) {
-        PyErr_Clear();
+        _PyErr_Clear(tstate);
         PyObject *funcstr = _PyObject_FunctionStr(func);
         if (funcstr != NULL) {
             _PyErr_Format(
@@ -5262,7 +5240,7 @@ format_kwargs_error(PyThreadState *tstate, PyObject *func, PyObject *kwargs)
         PyObject *exc, *val, *tb;
         _PyErr_Fetch(tstate, &exc, &val, &tb);
         if (val && PyTuple_Check(val) && PyTuple_GET_SIZE(val) == 1) {
-            PyErr_Clear();
+            _PyErr_Clear(tstate);
             PyObject *funcstr = _PyObject_FunctionStr(func);
             if (funcstr != NULL) {
                 PyObject *key = PyTuple_GET_ITEM(val, 0);

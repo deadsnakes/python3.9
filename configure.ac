@@ -533,6 +533,12 @@ case $ac_sys_system/$ac_sys_release in
     define_xopen_source=no
     ;;
 
+  # On HP-UX, defining _XOPEN_SOURCE to 600 or greater hides
+  # chroot() and other functions
+  hp*|HP*)
+    define_xopen_source=no
+    ;;
+
 esac
 
 if test $define_xopen_source = yes
@@ -3500,7 +3506,6 @@ AC_SUBST(DFLAGS)
 AC_SUBST(DTRACE_HEADERS)
 AC_SUBST(DTRACE_OBJS)
 DTRACE=
-DFLAGS=
 DTRACE_HEADERS=
 DTRACE_OBJS=
 
@@ -3521,7 +3526,7 @@ then
         [ac_cv_dtrace_link], [dnl
             ac_cv_dtrace_link=no
             echo 'BEGIN{}' > conftest.d
-            "$DTRACE" -G -s conftest.d -o conftest.o > /dev/null 2>&1 && \
+            "$DTRACE" "$DFLAGS" -G -s conftest.d -o conftest.o > /dev/null 2>&1 && \
                 ac_cv_dtrace_link=yes
       ])
     if test "$ac_cv_dtrace_link" = "yes"; then
