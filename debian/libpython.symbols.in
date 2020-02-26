@@ -693,6 +693,8 @@
  PyObject_Size@Base @SVER@
  PyObject_Str@Base @SVER@
  PyObject_Type@Base @SVER@
+ PyObject_VectorcallDict@Base 3.9.0~a4
+ PyObject_VectorcallMethod@Base 3.9.0~a4
  PyParser_ASTFromFile@Base @SVER@
  PyParser_ASTFromFileObject@Base @SVER@
  PyParser_ASTFromString@Base @SVER@
@@ -1354,7 +1356,6 @@
  _PyObject_DebugMallocStats@Base @SVER@
  _PyObject_DebugTypeStats@Base @SVER@
  _PyObject_Dump@Base @SVER@
- _PyObject_FastCallDict@Base @SVER@
  _PyObject_FastCallDictTstate@Base 3.9.0~a1
  _PyObject_FunctionStr@Base 3.9.0~a1
  _PyObject_GC_Calloc@Base @SVER@
@@ -1382,7 +1383,6 @@
  _PyObject_RealIsInstance@Base @SVER@
  _PyObject_RealIsSubclass@Base @SVER@
  _PyObject_SetAttrId@Base @SVER@
- _PyObject_VectorcallMethod@Base 3.9.0~a1
  _PyParser_Grammar@Base @SVER@
  _PyParser_TokenNames@Base @SVER@
  _PyPreConfig_InitCompatConfig@Base 3.8.0~b1
@@ -1569,6 +1569,7 @@
  _Py_IsMainInterpreter@Base 3.9.0~a2
  _Py_LegacyLocaleDetected@Base @SVER@
  _Py_Mangle@Base @SVER@
+ _Py_NewReference@Base 3.9.0~a4
  _Py_NoneStruct@Base @SVER@
  _Py_NotImplementedStruct@Base @SVER@
  _Py_PackageContext@Base @SVER@
