@@ -2,6 +2,359 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.0 alpha 4?
+===================================
+
+*Release date: 2020-02-25*
+
+Security
+--------
+
+- bpo-39184: Add audit events to functions in `fcntl`, `msvcrt`, `os`,
+  `resource`, `shutil`, `signal` and `syslog`.
+
+- bpo-39401: Avoid unsafe DLL load at startup on Windows 7 and earlier.
+
+- bpo-39184: Add audit events to command execution functions in os and pty
+  modules.
+
+Core and Builtins
+-----------------
+
+- bpo-39382: Fix a use-after-free in the single inheritance path of
+  ``issubclass()``, when the ``__bases__`` of an object has a single
+  reference, and so does its first item. Patch by Yonatan Goldschmidt.
+
+- bpo-39573: Update clinic tool to use :c:func:`Py_IS_TYPE`. Patch by
+  Dong-hee Na.
+
+- bpo-39619: Enable use of :func:`os.chroot` on HP-UX systems.
+
+- bpo-39573: Add :c:func:`Py_IS_TYPE` static inline function to check
+  whether the object *o* type is *type*.
+
+- bpo-39606: Fix regression caused by fix for bpo-39386, that prevented
+  calling ``aclose`` on an async generator that had already been closed or
+  exhausted.
+
+- bpo-39579: Change the ending column offset of `Attribute` nodes
+  constructed in `ast_for_dotted_name` to point at the end of the current
+  node and not at the end of the last `NAME` node.
+
+- bpo-1635741: Port _crypt extension module to multiphase initialization
+  (:pep:`489`).
+
+- bpo-1635741: Port _contextvars extension module to multiphase
+  initialization (:pep:`489`).
+
+- bpo-39510: Fix segfault in ``readinto()`` method on closed BufferedReader.
+
+- bpo-39502: Fix :func:`time.localtime` on 64-bit AIX  to support years
+  before 1902 and after 2038. Patch by M Felt.
+
+- bpo-39492: Fix a reference cycle in the C Pickler that was preventing the
+  garbage collection of deleted, pickled objects.
+
+- bpo-39453: Fixed a possible crash in :meth:`list.__contains__` when a list
+  is changed during comparing items. Patch by Dong-hee Na.
+
+- bpo-39434: :term:`floor division` of float operation now has a better
+  performance. Also the message of :exc:`ZeroDivisionError` for this
+  operation is updated. Patch by Dong-hee Na.
+
+- bpo-1635741: Port _codecs extension module to multiphase initialization
+  (:pep:`489`).
+
+- bpo-1635741: Port _bz2 extension module to multiphase initialization
+  (:pep:`489`).
+
+- bpo-1635741: Port _abc extension module to multiphase initialization
+  (:pep:`489`).
+
+- bpo-39320: Replace two complex bytecodes for building dicts with two
+  simpler ones. The new bytecodes ``DICT_MERGE`` and ``DICT_UPDATE`` have
+  been added The old bytecodes ``BUILD_MAP_UNPACK`` and
+  ``BUILD_MAP_UNPACK_WITH_CALL`` have been removed.
+
+- bpo-39219: Syntax errors raised in the tokenizer now always set correct
+  "text" and "offset" attributes.
+
+- bpo-36051: Drop the GIL during large ``bytes.join`` operations. Patch by
+  Bruce Merry.
+
+- bpo-38960: Fix DTrace build issues on FreeBSD. Patch by David Carlier.
+
+- bpo-37207: Speed up calls to ``range()`` by about 30%, by using the PEP
+  590 ``vectorcall`` calling convention. Patch by Mark Shannon.
+
+- bpo-36144: :class:`dict` (and :class:`collections.UserDict`) objects now
+  support PEP 584's merge (``|``) and update (``|=``) operators. Patch by
+  Brandt Bucher.
+
+- bpo-32856: Optimized the idiom for assignment a temporary variable in
+  comprehensions. Now ``for y in [expr]`` in comprehensions is as fast as a
+  simple assignment ``y = expr``.
+
+Library
+-------
+
+- bpo-30566: Fix :exc:`IndexError` when trying to decode an invalid string
+  with punycode codec.
+
+- bpo-39649: Remove obsolete check for `__args__` in
+  bdb.Bdb.format_stack_entry.
+
+- bpo-39648: Expanded :func:`math.gcd` and :func:`math.lcm` to handle
+  multiple arguments.
+
+- bpo-39681: Fix a regression where the C pickle module wouldn't allow
+  unpickling from a file-like object that doesn't expose a readinto()
+  method.
+
+- bpo-35950: Raise :exc:`io.UnsupportedOperation` in
+  :meth:`io.BufferedReader.truncate` when it is called on a read-only
+  :class:`io.BufferedReader` instance.
+
+- bpo-39479: Add :func:`math.lcm` function: least common multiple.
+
+- bpo-39674: Revert "Do not expose abstract collection classes in the
+  collections module" change (bpo-25988). Aliases to ABC like
+  collections.Mapping are kept in Python 3.9 to ease transition from Python
+  2.7, but will be removed in Python 3.10.
+
+- bpo-39104: Fix hanging ProcessPoolExcutor on ``shutdown(wait=False)`` when
+  a task has failed pickling.
+
+- bpo-39627: Fixed TypedDict totality check for inherited keys.
+
+- bpo-39474: Fixed starting position of AST for expressions like ``(a)(b)``,
+  ``(a)[b]`` and ``(a).b``.
+
+- bpo-21016: The :mod:`pydoc` and :mod:`trace` modules now use the
+  :mod:`sysconfig` module to get the path to the Python standard library, to
+  support uncommon installation path like ``/usr/lib64/python3.9/`` on
+  Fedora. Patch by Jan Matějek.
+
+- bpo-39590: Collections.deque now holds strong references during
+  deque.__contains__ and deque.count, fixing crashes.
+
+- bpo-39586: The distutils ``bdist_msi`` command is deprecated in Python
+  3.9, use ``bdist_wheel`` (wheel packages) instead.
+
+- bpo-39595: Improved performance of zipfile.Path for files with a large
+  number of entries. Also improved performance and fixed minor issue as
+  published with `importlib_metadata 1.5
+  <https://importlib-metadata.readthedocs.io/en/latest/changelog%20(links).html#v1-5-0>`_.
+
+- bpo-39350: Fix regression in :class:`fractions.Fraction` if the numerator
+  and/or the denominator is an :class:`int` subclass. The :func:`math.gcd`
+  function is now used to normalize the *numerator* and *denominator*.
+  :func:`math.gcd` always return a :class:`int` type. Previously, the GCD
+  type depended on *numerator* and *denominator*.
+
+- bpo-39567: Added audit for :func:`os.walk`, :func:`os.fwalk`,
+  :meth:`pathlib.Path.glob` and :meth:`pathlib.Path.rglob`.
+
+- bpo-39559: Remove unused, undocumented argument ``getters`` from
+  :func:`uuid.getnode`
+
+- bpo-38149: :func:`sys.audit` is now called only once per call of
+  :func:`glob.glob` and :func:`glob.iglob`.
+
+- bpo-39546: Fix a regression in :class:`~argparse.ArgumentParser` where
+  ``allow_abbrev=False`` was ignored for long options that used a prefix
+  character other than "-".
+
+- bpo-39450: Striped whitespace from docstring before returning it from
+  :func:`unittest.case.shortDescription`.
+
+- bpo-12915: A new function ``resolve_name`` has been added to the
+  ``pkgutil`` module. This resolves a string of the form ``'a.b.c.d'`` or
+  ``'a.b:c.d'`` to an object. In the example, ``a.b`` is a package/module
+  and ``c.d`` is an object within that package/module reached via recursive
+  attribute access.
+
+- bpo-39353: The :func:`binascii.crc_hqx` function is no longer deprecated.
+
+- bpo-39493: Mark ``typing.IO.closed`` as a property
+
+- bpo-39491: Add :data:`typing.Annotated` and ``include_extras`` parameter
+  to :func:`typing.get_type_hints` as part of :pep:`593`. Patch by Till
+  Varoquaux, documentation by Till Varoquaux and Konstantin Kashin.
+
+- bpo-39485: Fix a bug in :func:`unittest.mock.create_autospec` that would
+  complain about the wrong number of arguments for custom descriptors
+  defined in an extension module returning functions.
+
+- bpo-38932: Mock fully resets child objects on reset_mock(). Patch by
+  Vegard Stikbakke
+
+- bpo-39082: Allow AsyncMock to correctly patch static/class methods
+
+- bpo-39432: Implement PEP-489 algorithm for non-ascii "PyInit\_..." symbol
+  names in distutils to make it export the correct init symbol also on
+  Windows.
+
+- bpo-18819: Omit ``devmajor`` and ``devminor`` fields for non-device files
+  in :mod:`tarfile` archives, enabling bit-for-bit compatibility with GNU
+  ``tar(1)``.
+
+- bpo-39349: Added a new *cancel_futures* parameter to
+  :meth:`concurrent.futures.Executor.shutdown` that cancels all pending
+  futures which have not started running, instead of waiting for them to
+  complete before shutting down the executor.
+
+- bpo-39274: ``bool(fraction.Fraction)`` now returns a boolean even if
+  (numerator != 0) does not return a boolean (ex: numpy number).
+
+- bpo-34793: Remove support for ``with (await asyncio.lock):`` and ``with
+  (yield from asyncio.lock):``.  The same is correct for
+  ``asyncio.Condition`` and ``asyncio.Semaphore``.
+
+- bpo-25597: Ensure, if ``wraps`` is supplied to
+  :class:`unittest.mock.MagicMock`, it is used to calculate return values
+  for the magic methods instead of using the default return values. Patch by
+  Karthikeyan Singaravelan.
+
+- bpo-36350: `inspect.Signature.parameters` and
+  `inspect.BoundArguments.arguments` are now dicts instead of OrderedDicts.
+  Patch contributed by Rémi Lapeyre.
+
+- bpo-35727: Fix sys.exit() and sys.exit(None) exit code propagation when
+  used in multiprocessing.Process.
+
+- bpo-32173: * Add `lazycache` function to `__all__`. * Use `dict.clear` to
+  clear the cache. * Refactoring `getline` function and `checkcache`
+  function.
+
+Documentation
+-------------
+
+- bpo-17422: The language reference now specifies restrictions on class
+  namespaces. Adapted from a patch by Ethan Furman.
+
+- bpo-39572: Updated documentation of ``total`` flag of TypeDict.
+
+- bpo-39654: In pyclbr doc, update 'class' to 'module' where appropriate and
+  add readmodule comment. Patch by Hakan Çelik.
+
+- bpo-39153: Clarify refcounting semantics for the following functions: -
+  PyObject_SetItem - PyMapping_SetItemString - PyDict_SetItem -
+  PyDict_SetItemString
+
+- bpo-39392: Explain that when filling with turtle, overlap regions may be
+  left unfilled.
+
+- bpo-39369: Update mmap readline method description. The fact that the
+  readline method does update the file position should not be ignored since
+  this might give the impression for the programmer that it doesn't update
+  it.
+
+- bpo-9056: Include subsection in TOC for PDF version of docs.
+
+Tests
+-----
+
+- bpo-38325: Skip tests on non-BMP characters of test_winconsoleio.
+
+- bpo-39502: Skip test_zipfile.test_add_file_after_2107() if
+  :func:`time.localtime` fails with :exc:`OverflowError`. It is the case on
+  AIX 6.1 for example.
+
+Build
+-----
+
+- bpo-39489: Remove ``COUNT_ALLOCS`` special build.
+
+Windows
+-------
+
+- bpo-39553: Delete unused code related to SxS manifests.
+
+- bpo-39439: Honor the Python path when a virtualenv is active on Windows.
+
+- bpo-39393: Improve the error message when attempting to load a DLL with
+  unresolved dependencies.
+
+- bpo-38883: :meth:`~pathlib.Path.home()` and
+  :meth:`~pathlib.Path.expanduser()` on Windows now prefer
+  :envvar:`USERPROFILE` and no longer use :envvar:`HOME`, which is not
+  normally set for regular user accounts. This makes them again behave like
+  :func:`os.path.expanduser`, which was changed to ignore :envvar:`HOME` in
+  3.8, see :issue:`36264`.
+
+- bpo-39185: The build.bat script has additional options for very-quiet
+  output (-q) and very-verbose output (-vv)
+
+IDLE
+----
+
+- bpo-39663: Add tests for pyparse find_good_parse_start().
+
+- bpo-39600: In the font configuration window, remove duplicated font names.
+
+- bpo-30780: Add remaining configdialog tests for buttons and highlights and
+  keys tabs.
+
+- bpo-39388: IDLE Settings Cancel button now cancels pending changes
+
+- bpo-38792: Close an IDLE shell calltip if a :exc:`KeyboardInterrupt` or
+  shell restart occurs.  Patch by Zackery Spytz.
+
+C API
+-----
+
+- bpo-35081: Move the ``bytes_methods.h`` header file to the internal C API
+  as ``pycore_bytes_methods.h``: it only contains private symbols (prefixed
+  by ``_Py``), except of the ``PyDoc_STRVAR_shared()`` macro.
+
+- bpo-35081: Move the ``dtoa.h`` header file to the internal C API as
+  ``pycore_dtoa.h``: it only contains private functions (prefixed by
+  ``_Py``). The :mod:`math` and :mod:`cmath` modules must now be compiled
+  with the ``Py_BUILD_CORE`` macro defined.
+
+- bpo-39573: Add :c:func:`Py_SET_SIZE` function to set the size of an
+  object.
+
+- bpo-39500: :c:func:`PyUnicode_IsIdentifier` does not call
+  :c:func:`Py_FatalError` anymore if the string is not ready.
+
+- bpo-39573: Add :c:func:`Py_SET_TYPE` function to set the type of an
+  object.
+
+- bpo-39573: Add a :c:func:`Py_SET_REFCNT` function to set the reference
+  counter of an object.
+
+- bpo-39542: Convert :c:func:`PyType_HasFeature`, :c:func:`PyType_Check` and
+  :c:func:`PyType_CheckExact` macros to static inline functions.
+
+- bpo-39542: In the limited C API, ``PyObject_INIT()`` and
+  ``PyObject_INIT_VAR()`` are now defined as aliases to
+  :c:func:`PyObject_Init` and :c:func:`PyObject_InitVar` to make their
+  implementation opaque. It avoids to leak implementation details in the
+  limited C API. Exclude the following functions from the limited C API:
+  ``_Py_NewReference()``, ``_Py_ForgetReference()``,
+  ``_PyTraceMalloc_NewReference()`` and ``_Py_GetRefTotal()``.
+
+- bpo-39542: Exclude trashcan mechanism from the limited C API: it requires
+  access to PyTypeObject and PyThreadState structure fields, whereas these
+  structures are opaque in the limited C API.
+
+- bpo-39511: The :c:func:`PyThreadState_Clear` function now calls the
+  :c:member:`PyThreadState.on_delete` callback. Previously, that happened in
+  :c:func:`PyThreadState_Delete`.
+
+- bpo-38076: Fix to clear the interpreter state only after clearing module
+  globals to guarantee module state access from C Extensions during runtime
+  destruction
+
+- bpo-39245: The Vectorcall API (PEP 590) was made public, adding the
+  functions ``PyObject_Vectorcall``, ``PyObject_VectorcallMethod``,
+  ``PyVectorcall_Function``, ``PyObject_CallOneArg``,
+  ``PyObject_CallMethodNoArgs``, ``PyObject_CallMethodOneArg``,
+  ``PyObject_FastCallDict``, and the flag ``Py_TPFLAGS_HAVE_VECTORCALL``.
+
+
 What's New in Python 3.9.0 alpha 3?
 ===================================
 
