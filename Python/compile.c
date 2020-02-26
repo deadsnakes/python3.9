@@ -212,11 +212,13 @@ static int compiler_set_qualname(struct compiler *);
 static int compiler_sync_comprehension_generator(
                                       struct compiler *c,
                                       asdl_seq *generators, int gen_index,
+                                      int depth,
                                       expr_ty elt, expr_ty val, int type);
 
 static int compiler_async_comprehension_generator(
                                       struct compiler *c,
                                       asdl_seq *generators, int gen_index,
+                                      int depth,
                                       expr_ty elt, expr_ty val, int type);
 
 static PyCodeObject *assemble(struct compiler *, int addNone);
@@ -1007,9 +1009,6 @@ stack_effect(int opcode, int oparg, int jump)
         case BUILD_SET:
         case BUILD_STRING:
             return 1-oparg;
-        case BUILD_MAP_UNPACK:
-        case BUILD_MAP_UNPACK_WITH_CALL:
-            return 1 - oparg;
         case BUILD_MAP:
             return 1 - 2*oparg;
         case BUILD_CONST_KEY_MAP:
@@ -1125,6 +1124,8 @@ stack_effect(int opcode, int oparg, int jump)
             return 0;
         case LIST_EXTEND:
         case SET_UPDATE:
+        case DICT_MERGE:
+        case DICT_UPDATE:
             return -1;
         default:
             return PY_INVALID_STACK_EFFECT;
@@ -3868,37 +3869,58 @@ static int
 compiler_dict(struct compiler *c, expr_ty e)
 {
     Py_ssize_t i, n, elements;
-    int containers;
+    int have_dict;
     int is_unpacking = 0;
     n = asdl_seq_LEN(e->v.Dict.values);
-    containers = 0;
+    have_dict = 0;
     elements = 0;
     for (i = 0; i < n; i++) {
         is_unpacking = (expr_ty)asdl_seq_GET(e->v.Dict.keys, i) == NULL;
-        if (elements == 0xFFFF || (elements && is_unpacking)) {
-            if (!compiler_subdict(c, e, i - elements, i))
-                return 0;
-            containers++;
-            elements = 0;
-        }
         if (is_unpacking) {
+            if (elements) {
+                if (!compiler_subdict(c, e, i - elements, i)) {
+                    return 0;
+                }
+                if (have_dict) {
+                    ADDOP_I(c, DICT_UPDATE, 1);
+                }
+                have_dict = 1;
+                elements = 0;
+            }
+            if (have_dict == 0) {
+                ADDOP_I(c, BUILD_MAP, 0);
+                have_dict = 1;
+            }
             VISIT(c, expr, (expr_ty)asdl_seq_GET(e->v.Dict.values, i));
-            containers++;
+            ADDOP_I(c, DICT_UPDATE, 1);
         }
         else {
-            elements++;
+            if (elements == 0xFFFF) {
+                if (!compiler_subdict(c, e, i - elements, i)) {
+                    return 0;
+                }
+                if (have_dict) {
+                    ADDOP_I(c, DICT_UPDATE, 1);
+                }
+                have_dict = 1;
+                elements = 0;
+            }
+            else {
+                elements++;
+            }
         }
     }
-    if (elements || containers == 0) {
-        if (!compiler_subdict(c, e, n - elements, n))
+    if (elements) {
+        if (!compiler_subdict(c, e, n - elements, n)) {
             return 0;
-        containers++;
+        }
+        if (have_dict) {
+            ADDOP_I(c, DICT_UPDATE, 1);
+        }
+        have_dict = 1;
     }
-    /* If there is more than one dict, they need to be merged into a new
-     * dict.  If there is one dict and it's an unpacking, then it needs
-     * to be copied into a new dict." */
-    if (containers > 1 || is_unpacking) {
-        ADDOP_I(c, BUILD_MAP_UNPACK, containers);
+    if (!have_dict) {
+        ADDOP_I(c, BUILD_MAP, 0);
     }
     return 1;
 }
@@ -3968,7 +3990,7 @@ infer_type(expr_ty e)
     case FormattedValue_kind:
         return &PyUnicode_Type;
     case Constant_kind:
-        return e->v.Constant.value->ob_type;
+        return Py_TYPE(e->v.Constant.value);
     default:
         return NULL;
     }
@@ -4263,8 +4285,8 @@ ex_call:
     }
     /* Then keyword arguments */
     if (nkwelts) {
-        /* the number of dictionaries on the stack */
-        Py_ssize_t nsubkwargs = 0;
+        /* Has a new dict been pushed */
+        int have_dict = 0;
 
         nseen = 0;  /* the number of keyword arguments on the stack following */
         for (i = 0; i < nkwelts; i++) {
@@ -4272,13 +4294,18 @@ ex_call:
             if (kw->arg == NULL) {
                 /* A keyword argument unpacking. */
                 if (nseen) {
-                    if (!compiler_subkwargs(c, keywords, i - nseen, i))
+                    if (!compiler_subkwargs(c, keywords, i - nseen, i)) {
                         return 0;
-                    nsubkwargs++;
+                    }
+                    have_dict = 1;
                     nseen = 0;
                 }
+                if (!have_dict) {
+                    ADDOP_I(c, BUILD_MAP, 0);
+                    have_dict = 1;
+                }
                 VISIT(c, expr, kw->value);
-                nsubkwargs++;
+                ADDOP_I(c, DICT_MERGE, 1);
             }
             else {
                 nseen++;
@@ -4286,14 +4313,15 @@ ex_call:
         }
         if (nseen) {
             /* Pack up any trailing keyword arguments. */
-            if (!compiler_subkwargs(c, keywords, nkwelts - nseen, nkwelts))
+            if (!compiler_subkwargs(c, keywords, nkwelts - nseen, nkwelts)) {
                 return 0;
-            nsubkwargs++;
+            }
+            if (have_dict) {
+                ADDOP_I(c, DICT_MERGE, 1);
+            }
+            have_dict = 1;
         }
-        if (nsubkwargs > 1) {
-            /* Pack it all up */
-            ADDOP_I(c, BUILD_MAP_UNPACK_WITH_CALL, nsubkwargs);
-        }
+        assert(have_dict);
     }
     ADDOP_I(c, CALL_FUNCTION_EX, nkwelts > 0);
     return 1;
@@ -4317,22 +4345,24 @@ ex_call:
 static int
 compiler_comprehension_generator(struct compiler *c,
                                  asdl_seq *generators, int gen_index,
+                                 int depth,
                                  expr_ty elt, expr_ty val, int type)
 {
     comprehension_ty gen;
     gen = (comprehension_ty)asdl_seq_GET(generators, gen_index);
     if (gen->is_async) {
         return compiler_async_comprehension_generator(
-            c, generators, gen_index, elt, val, type);
+            c, generators, gen_index, depth, elt, val, type);
     } else {
         return compiler_sync_comprehension_generator(
-            c, generators, gen_index, elt, val, type);
+            c, generators, gen_index, depth, elt, val, type);
     }
 }
 
 static int
 compiler_sync_comprehension_generator(struct compiler *c,
                                       asdl_seq *generators, int gen_index,
+                                      int depth,
                                       expr_ty elt, expr_ty val, int type)
 {
     /* generate code for the iterator, then each of the ifs,
@@ -4360,12 +4390,38 @@ compiler_sync_comprehension_generator(struct compiler *c,
     }
     else {
         /* Sub-iter - calculate on the fly */
-        VISIT(c, expr, gen->iter);
-        ADDOP(c, GET_ITER);
+        /* Fast path for the temporary variable assignment idiom:
+             for y in [f(x)]
+         */
+        asdl_seq *elts;
+        switch (gen->iter->kind) {
+            case List_kind:
+                elts = gen->iter->v.List.elts;
+                break;
+            case Tuple_kind:
+                elts = gen->iter->v.Tuple.elts;
+                break;
+            default:
+                elts = NULL;
+        }
+        if (asdl_seq_LEN(elts) == 1) {
+            expr_ty elt = asdl_seq_GET(elts, 0);
+            if (elt->kind != Starred_kind) {
+                VISIT(c, expr, elt);
+                start = NULL;
+            }
+        }
+        if (start) {
+            VISIT(c, expr, gen->iter);
+            ADDOP(c, GET_ITER);
+        }
     }
-    compiler_use_next_block(c, start);
-    ADDOP_JREL(c, FOR_ITER, anchor);
-    NEXT_BLOCK(c);
+    if (start) {
+        depth++;
+        compiler_use_next_block(c, start);
+        ADDOP_JREL(c, FOR_ITER, anchor);
+        NEXT_BLOCK(c);
+    }
     VISIT(c, expr, gen->target);
 
     /* XXX this needs to be cleaned up...a lot! */
@@ -4379,7 +4435,7 @@ compiler_sync_comprehension_generator(struct compiler *c,
 
     if (++gen_index < asdl_seq_LEN(generators))
         if (!compiler_comprehension_generator(c,
-                                              generators, gen_index,
+                                              generators, gen_index, depth,
                                               elt, val, type))
         return 0;
 
@@ -4394,18 +4450,18 @@ compiler_sync_comprehension_generator(struct compiler *c,
             break;
         case COMP_LISTCOMP:
             VISIT(c, expr, elt);
-            ADDOP_I(c, LIST_APPEND, gen_index + 1);
+            ADDOP_I(c, LIST_APPEND, depth + 1);
             break;
         case COMP_SETCOMP:
             VISIT(c, expr, elt);
-            ADDOP_I(c, SET_ADD, gen_index + 1);
+            ADDOP_I(c, SET_ADD, depth + 1);
             break;
         case COMP_DICTCOMP:
             /* With '{k: v}', k is evaluated before v, so we do
                the same. */
             VISIT(c, expr, elt);
             VISIT(c, expr, val);
-            ADDOP_I(c, MAP_ADD, gen_index + 1);
+            ADDOP_I(c, MAP_ADD, depth + 1);
             break;
         default:
             return 0;
@@ -4414,8 +4470,10 @@ compiler_sync_comprehension_generator(struct compiler *c,
         compiler_use_next_block(c, skip);
     }
     compiler_use_next_block(c, if_cleanup);
-    ADDOP_JABS(c, JUMP_ABSOLUTE, start);
-    compiler_use_next_block(c, anchor);
+    if (start) {
+        ADDOP_JABS(c, JUMP_ABSOLUTE, start);
+        compiler_use_next_block(c, anchor);
+    }
 
     return 1;
 }
@@ -4423,6 +4481,7 @@ compiler_sync_comprehension_generator(struct compiler *c,
 static int
 compiler_async_comprehension_generator(struct compiler *c,
                                       asdl_seq *generators, int gen_index,
+                                      int depth,
                                       expr_ty elt, expr_ty val, int type)
 {
     comprehension_ty gen;
@@ -4466,9 +4525,10 @@ compiler_async_comprehension_generator(struct compiler *c,
         NEXT_BLOCK(c);
     }
 
+    depth++;
     if (++gen_index < asdl_seq_LEN(generators))
         if (!compiler_comprehension_generator(c,
-                                              generators, gen_index,
+                                              generators, gen_index, depth,
                                               elt, val, type))
         return 0;
 
@@ -4483,18 +4543,18 @@ compiler_async_comprehension_generator(struct compiler *c,
             break;
         case COMP_LISTCOMP:
             VISIT(c, expr, elt);
-            ADDOP_I(c, LIST_APPEND, gen_index + 1);
+            ADDOP_I(c, LIST_APPEND, depth + 1);
             break;
         case COMP_SETCOMP:
             VISIT(c, expr, elt);
-            ADDOP_I(c, SET_ADD, gen_index + 1);
+            ADDOP_I(c, SET_ADD, depth + 1);
             break;
         case COMP_DICTCOMP:
             /* With '{k: v}', k is evaluated before v, so we do
                the same. */
             VISIT(c, expr, elt);
             VISIT(c, expr, val);
-            ADDOP_I(c, MAP_ADD, gen_index + 1);
+            ADDOP_I(c, MAP_ADD, depth + 1);
             break;
         default:
             return 0;
@@ -4557,7 +4617,7 @@ compiler_comprehension(struct compiler *c, expr_ty e, int type,
         ADDOP_I(c, op, 0);
     }
 
-    if (!compiler_comprehension_generator(c, generators, 0, elt,
+    if (!compiler_comprehension_generator(c, generators, 0, 0, elt,
                                           val, type))
         goto error_in_scope;
 
