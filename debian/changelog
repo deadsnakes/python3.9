@@ -1,3 +1,9 @@
+python3.9 (3.9.0~a5-1+bionic1) bionic; urgency=medium
+
+  * Python 3.9.0 alpha 5 release.
+
+ -- Anthony Sottile <asottile@umich.edu>  Mon, 23 Mar 2020 16:11:30 -0700
+
 python3.9 (3.9.0~a4-1+bionic2) bionic; urgency=medium
 
   * Fix debug symbols files.
