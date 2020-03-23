@@ -448,6 +448,7 @@
  PyInstanceMethod_Type@Base @SVER@
  PyInterpreterState_Clear@Base @SVER@
  PyInterpreterState_Delete@Base @SVER@
+ PyInterpreterState_Get@Base 3.9.0~a5
  PyInterpreterState_GetDict@Base 3.8.0~a3
  PyInterpreterState_GetID@Base @SVER@
  PyInterpreterState_Head@Base @SVER@
@@ -548,6 +549,7 @@
  PyModule_AddIntConstant@Base @SVER@
  PyModule_AddObject@Base @SVER@
  PyModule_AddStringConstant@Base @SVER@
+ PyModule_AddType@Base 3.9.0~a5
  PyModule_ExecDef@Base @SVER@
  PyModule_GetDef@Base @SVER@
  PyModule_GetDict@Base @SVER@
@@ -831,6 +833,8 @@
  PyThreadState_DeleteCurrent@Base @SVER@
  PyThreadState_Get@Base @SVER@
  PyThreadState_GetDict@Base @SVER@
+ PyThreadState_GetFrame@Base 3.9.0~a5
+ PyThreadState_GetInterpreter@Base 3.9.0~a5
  PyThreadState_New@Base @SVER@
  PyThreadState_Next@Base @SVER@
  PyThreadState_SetAsyncExc@Base @SVER@
@@ -1122,6 +1126,7 @@
  _PyArg_BadArgument@Base @SVER@
  _PyArg_CheckPositional@Base @SVER@
  _PyArg_NoKeywords@Base @SVER@
+ _PyArg_NoKwnames@Base 3.9.0~a5
  _PyArg_NoPositional@Base @SVER@
  _PyArg_ParseStack@Base @SVER@
  _PyArg_ParseStackAndKeywords@Base @SVER@
@@ -1222,19 +1227,19 @@
  _PyEval_CallTracing@Base @SVER@
  _PyEval_EvalCodeWithName@Base @SVER@
  _PyEval_EvalFrameDefault@Base @SVER@
- _PyEval_FiniThreads@Base @SVER@
  _PyEval_GetAsyncGenFinalizer@Base @SVER@
  _PyEval_GetAsyncGenFirstiter@Base @SVER@
  _PyEval_GetBuiltinId@Base @SVER@
  _PyEval_GetCoroutineOriginTrackingDepth@Base @SVER@
  _PyEval_GetSwitchInterval@Base @SVER@
- _PyEval_Initialize@Base @SVER@
  _PyEval_ReInitThreads@Base 3.8.0~b1
  _PyEval_RequestCodeExtraIndex@Base @SVER@
  _PyEval_SetAsyncGenFinalizer@Base @SVER@
  _PyEval_SetAsyncGenFirstiter@Base @SVER@
  _PyEval_SetCoroutineOriginTrackingDepth@Base @SVER@
+ _PyEval_SetProfile@Base 3.9.0~a5
  _PyEval_SetSwitchInterval@Base @SVER@
+ _PyEval_SetTrace@Base 3.9.0~a5
  _PyEval_SignalAsyncExc@Base @SVER@
  _PyEval_SignalReceived@Base @SVER@
  _PyEval_SliceIndex@Base @SVER@
@@ -1279,7 +1284,7 @@
  _PyInterpreterID_Type@Base 3.8.0~a3
  _PyInterpreterState_DeleteExceptMain@Base @SVER@
  _PyInterpreterState_Enable@Base @SVER@
- _PyInterpreterState_Get@Base @SVER@
+ _PyInterpreterState_GetEvalFrameFunc@Base 3.9.0~a5
  _PyInterpreterState_GetIDObject@Base 3.8.0~a3
  _PyInterpreterState_GetMainModule@Base 3.8.0~a3
  _PyInterpreterState_IDDecref@Base @SVER@
@@ -1288,6 +1293,7 @@
  _PyInterpreterState_LookUpID@Base @SVER@
  _PyInterpreterState_RequireIDRef@Base 3.8.0~a3
  _PyInterpreterState_RequiresIDRef@Base 3.8.0~a3
+ _PyInterpreterState_SetEvalFrameFunc@Base 3.9.0~a5
  _PyList_DebugMallocStats@Base @SVER@
  _PyList_Extend@Base @SVER@
  _PyLong_AsByteArray@Base @SVER@
@@ -1443,8 +1449,10 @@
  _PyTraceMalloc_GetTraceback@Base @SVER@
  _PyTraceMalloc_NewReference@Base @SVER@
  _PyTraceback_Add@Base @SVER@
+ _PyTrash_begin@Base 3.9.0~a5
  _PyTrash_deposit_object@Base @SVER@
  _PyTrash_destroy_chain@Base @SVER@
+ _PyTrash_end@Base 3.9.0~a5
  _PyTrash_thread_deposit_object@Base @SVER@
  _PyTrash_thread_destroy_chain@Base @SVER@
  _PyTuple_DebugMallocStats@Base @SVER@
@@ -1548,7 +1556,7 @@
  _Py_EncodeLocaleRaw@Base @SVER@
  _Py_EncodeUTF8Ex@Base @SVER@
  _Py_FalseStruct@Base @SVER@
- _Py_FinishPendingCalls@Base 3.8.0~a3
+ _Py_FatalErrorFunc@Base 3.9.0~a5
  _Py_FreeCharPArray@Base @SVER@
  _Py_GetAllocatedBlocks@Base @SVER@
  _Py_GetConfigsAsDict@Base 3.8.0~a4
@@ -1566,7 +1574,6 @@
  _Py_IsCoreInitialized@Base @SVER@
  _Py_IsFinalizing@Base @SVER@
  _Py_IsLocaleCoercionTarget@Base @SVER@
- _Py_IsMainInterpreter@Base 3.9.0~a2
  _Py_LegacyLocaleDetected@Base @SVER@
  _Py_Mangle@Base @SVER@
  _Py_NewReference@Base 3.9.0~a4
