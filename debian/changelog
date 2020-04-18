@@ -1,3 +1,9 @@
+python3.9 (3.9.0~a5-1+focal1) focal; urgency=medium
+
+  * Update packaging for focal
+
+ -- Anthony Sottile <asottile@umich.edu>  Fri, 17 Apr 2020 17:00:31 -0700
+
 python3.9 (3.9.0~a5-1+bionic1) bionic; urgency=medium
 
   * Python 3.9.0 alpha 5 release.
