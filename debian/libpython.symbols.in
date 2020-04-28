@@ -648,6 +648,7 @@
  PyObject_CallNoArgs@Base 3.9.0~a1
  PyObject_CallObject@Base @SVER@
  PyObject_Calloc@Base @SVER@
+ PyObject_CheckBuffer@Base 3.9.0~a6
  PyObject_CheckReadBuffer@Base @SVER@
  PyObject_ClearWeakRefs@Base @SVER@
  PyObject_CopyData@Base @SVER@
@@ -657,8 +658,11 @@
  PyObject_Format@Base @SVER@
  PyObject_Free@Base @SVER@
  PyObject_GC_Del@Base @SVER@
+ PyObject_GC_IsFinalized@Base 3.9.0~a6
+ PyObject_GC_IsTracked@Base 3.9.0~a6
  PyObject_GC_Track@Base @SVER@
  PyObject_GC_UnTrack@Base @SVER@
+ PyObject_GET_WEAKREFS_LISTPTR@Base 3.9.0~a6
  PyObject_GenericGetAttr@Base @SVER@
  PyObject_GenericGetDict@Base @SVER@
  PyObject_GenericSetAttr@Base @SVER@
@@ -673,6 +677,7 @@
  PyObject_HasAttrString@Base @SVER@
  PyObject_Hash@Base @SVER@
  PyObject_HashNotImplemented@Base @SVER@
+ PyObject_IS_GC@Base 3.9.0~a6
  PyObject_Init@Base @SVER@
  PyObject_InitVar@Base @SVER@
  PyObject_IsInstance@Base @SVER@
@@ -717,6 +722,13 @@
  PyParser_SimpleParseString@Base @SVER@
  PyParser_SimpleParseStringFlags@Base @SVER@
  PyParser_SimpleParseStringFlagsFilename@Base @SVER@
+ PyPegen_ASTFromFile@Base 3.9.0~a6
+ PyPegen_ASTFromFileObject@Base 3.9.0~a6
+ PyPegen_ASTFromString@Base 3.9.0~a6
+ PyPegen_ASTFromStringObject@Base 3.9.0~a6
+ PyPegen_CodeObjectFromFile@Base 3.9.0~a6
+ PyPegen_CodeObjectFromFileObject@Base 3.9.0~a6
+ PyPegen_CodeObjectFromString@Base 3.9.0~a6
  PyPickleBuffer_FromObject@Base 3.8.0~b1
  PyPickleBuffer_GetBuffer@Base 3.8.0~b1
  PyPickleBuffer_Release@Base 3.8.0~b1
@@ -834,6 +846,7 @@
  PyThreadState_Get@Base @SVER@
  PyThreadState_GetDict@Base @SVER@
  PyThreadState_GetFrame@Base 3.9.0~a5
+ PyThreadState_GetID@Base 3.9.0~a6
  PyThreadState_GetInterpreter@Base 3.9.0~a5
  PyThreadState_New@Base @SVER@
  PyThreadState_Next@Base @SVER@
@@ -1058,6 +1071,8 @@
  Py_Finalize@Base @SVER@
  Py_FinalizeEx@Base @SVER@
  Py_FrozenFlag@Base @SVER@
+ Py_GenericAlias@Base 3.9.0~a6
+ Py_GenericAliasType@Base 3.9.0~a6
  Py_GetBuildInfo@Base @SVER@
  Py_GetCompiler@Base @SVER@
  Py_GetCopyright@Base @SVER@
@@ -1205,6 +1220,7 @@
  _PyErr_BadInternalCall@Base @SVER@
  _PyErr_ChainExceptions@Base @SVER@
  _PyErr_CheckSignals@Base 3.8.0~a3
+ _PyErr_CheckSignalsTstate@Base 3.9.0~a6
  _PyErr_Clear@Base 3.8.0~b1
  _PyErr_Display@Base 3.8.0~b1
  _PyErr_ExceptionMatches@Base 3.8.0~b1
@@ -1232,7 +1248,6 @@
  _PyEval_GetBuiltinId@Base @SVER@
  _PyEval_GetCoroutineOriginTrackingDepth@Base @SVER@
  _PyEval_GetSwitchInterval@Base @SVER@
- _PyEval_ReInitThreads@Base 3.8.0~b1
  _PyEval_RequestCodeExtraIndex@Base @SVER@
  _PyEval_SetAsyncGenFinalizer@Base @SVER@
  _PyEval_SetAsyncGenFirstiter@Base @SVER@
@@ -1284,6 +1299,7 @@
  _PyInterpreterID_Type@Base 3.8.0~a3
  _PyInterpreterState_DeleteExceptMain@Base @SVER@
  _PyInterpreterState_Enable@Base @SVER@
+ _PyInterpreterState_GetConfig@Base 3.9.0~a6
  _PyInterpreterState_GetEvalFrameFunc@Base 3.9.0~a5
  _PyInterpreterState_GetIDObject@Base 3.8.0~a3
  _PyInterpreterState_GetMainModule@Base 3.8.0~a3
@@ -1413,11 +1429,13 @@
  _PySys_SetObjectId@Base @SVER@
  _PyThreadState_DeleteCurrent@Base 3.9.0~a1
  _PyThreadState_DeleteExcept@Base @SVER@
+ _PyThreadState_GetDict@Base 3.9.0~a6
  _PyThreadState_Init@Base @SVER@
  _PyThreadState_Prealloc@Base @SVER@
  _PyThreadState_Swap@Base 3.8.0~b1
  _PyThreadState_UncheckedGet@Base @SVER@
  _PyThread_CurrentFrames@Base @SVER@
+ _PyThread_at_fork_reinit@Base 3.9.0~a6
  _PyTime_AsMicroseconds@Base @SVER@
  _PyTime_AsMilliseconds@Base @SVER@
  _PyTime_AsNanosecondsObject@Base @SVER@
@@ -1477,7 +1495,6 @@
  _PyUnicodeWriter_WriteStr@Base @SVER@
  _PyUnicodeWriter_WriteSubstring@Base @SVER@
  _PyUnicode_AsASCIIString@Base @SVER@
- _PyUnicode_AsKind@Base @SVER@
  _PyUnicode_AsLatin1String@Base @SVER@
  _PyUnicode_AsUTF8String@Base @SVER@
  _PyUnicode_AsUnicode@Base @SVER@
@@ -1556,9 +1573,11 @@
  _Py_EncodeLocaleRaw@Base @SVER@
  _Py_EncodeUTF8Ex@Base @SVER@
  _Py_FalseStruct@Base @SVER@
+ _Py_FatalErrorFormat@Base 3.9.0~a6
  _Py_FatalErrorFunc@Base 3.9.0~a5
  _Py_FreeCharPArray@Base @SVER@
  _Py_GetAllocatedBlocks@Base @SVER@
+ _Py_GetConfig@Base 3.9.0~a6
  _Py_GetConfigsAsDict@Base 3.8.0~a4
  _Py_GetEnv@Base 3.8.0~a4
  _Py_GetErrorHandler@Base @SVER@
