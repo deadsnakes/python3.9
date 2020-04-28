@@ -2,6 +2,458 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.0 alpha 6?
+===================================
+
+*Release date: 2020-04-27*
+
+Security
+--------
+
+- bpo-40121: Fixes audit events raised on creating a new socket.
+
+- bpo-39073: Disallow CR or LF in email.headerregistry.Address arguments to
+  guard against header injection attacks.
+
+- bpo-39503: CVE-2020-8492: The
+  :class:`~urllib.request.AbstractBasicAuthHandler` class of the
+  :mod:`urllib.request` module uses an inefficient regular expression which
+  can be exploited by an attacker to cause a denial of service. Fix the
+  regex to prevent the catastrophic backtracking. Vulnerability reported by
+  Ben Caller and Matt Schwager.
+
+Core and Builtins
+-----------------
+
+- bpo-40313: Improve the performance of bytes.hex().
+
+- bpo-40334: Switch to a new parser, based on PEG.  For more details see PEP
+  617. To temporarily switch back to the old parser, use ``-X oldparser`` or
+  ``PYTHONOLDPARSER=1``.  In Python 3.10 we will remove the old parser
+  completely, including the ``parser`` module (already deprecated) and
+  anything that depends on it.
+
+- bpo-40267: Fix the tokenizer to display the correct error message, when
+  there is a SyntaxError on the last input character and no newline follows.
+  It used to be `unexpected EOF while parsing`, while it should be `invalid
+  syntax`.
+
+- bpo-39522: Correctly unparse explicit ``u`` prefix for strings when
+  postponed evaluation for annotations activated. Patch by Batuhan Taskaya.
+
+- bpo-40246: Report a specialized error message, `invalid string prefix`,
+  when the tokenizer encounters a string with an invalid prefix.
+
+- bpo-40082: Fix the signal handler: it now always uses the main
+  interpreter, rather than trying to get the current Python thread state.
+
+- bpo-37388: str.encode() and str.decode() no longer check the encoding and
+  errors in development mode or in debug mode during Python finalization.
+  The codecs machinery can no longer work on very late calls to str.encode()
+  and str.decode().
+
+- bpo-40077: Fix possible refleaks in :mod:`_json`, memo of PyScannerObject
+  should be traversed.
+
+- bpo-37207: Speed up calls to ``dict()`` by using the :pep:`590`
+  ``vectorcall`` calling convention.
+
+- bpo-40141: Add column and line information to ``ast.keyword`` nodes. Patch
+  by Pablo Galindo.
+
+- bpo-1635741: Port :mod:`resource` to multiphase initialization
+  (:pep:`489`).
+
+- bpo-1635741: Port :mod:`math` to multiphase initialization (:pep:`489`).
+
+- bpo-1635741: Port _uuid module to multiphase initialization (:pep:`489`).
+
+- bpo-40077: Convert json module to use :c:func:`PyType_FromSpec`.
+
+- bpo-40067: Improve the error message for multiple star expressions in an
+  assignment. Patch by Furkan Onder
+
+- bpo-1635741: Port _functools module to multiphase initialization (PEP
+  489). Patch by Paulo Henrique Silva.
+
+- bpo-1635741: Port operator module to multiphase initialization (PEP 489).
+  Patch by Paulo Henrique Silva.
+
+- bpo-20526: Fix :c:func:`PyThreadState_Clear()`. ``PyThreadState.frame`` is
+  a borrowed reference, not a strong reference: ``PyThreadState_Clear()``
+  must not call ``Py_CLEAR(tstate->frame)``.
+
+- bpo-1635741: Port time module to multiphase initialization (:pep:`489`).
+  Patch by Paulo Henrique Silva.
+
+- bpo-1635741: Port _weakref extension module to multiphase initialization
+  (:pep:`489`).
+
+- bpo-40020: Fix a leak and subsequent crash in parsetok.c caused by realloc
+  misuse on a rare codepath.
+
+- bpo-39939: Added str.removeprefix and str.removesuffix methods and
+  corresponding bytes, bytearray, and collections.UserString methods to
+  remove affixes from a string if present. See :pep:`616` for a full
+  description. Patch by Dennis Sweeney.
+
+- bpo-39481: Implement PEP 585. This supports list[int], tuple[str, ...]
+  etc.
+
+- bpo-32894: Support unparsing of infinity numbers in postponed annotations.
+  Patch by Batuhan Taşkaya.
+
+- bpo-37207: Speed up calls to ``list()`` by using the :pep:`590`
+  ``vectorcall`` calling convention. Patch by Mark Shannon.
+
+Library
+-------
+
+- bpo-40398: :func:`typing.get_args` now always returns an empty tuple for
+  special generic aliases.
+
+- bpo-40396: Functions :func:`typing.get_origin`, :func:`typing.get_args`
+  and :func:`typing.get_type_hints` support now generic aliases like
+  ``list[int]``.
+
+- bpo-38061: Optimize the :mod:`subprocess` module on FreeBSD using
+  ``closefrom()``. A single ``close(fd)`` syscall is cheap, but when
+  ``sysconf(_SC_OPEN_MAX)`` is high, the loop calling ``close(fd)`` on each
+  file descriptor can take several milliseconds.
+
+  The workaround on FreeBSD to improve performance was to load and mount the
+  fdescfs kernel module, but this is not enabled by default.
+
+  Initial patch by Ed Maste (emaste), Conrad Meyer (cem), Kyle Evans
+  (kevans) and Kubilay Kocak (koobs):
+  https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=242274
+
+- bpo-38061: On FreeBSD, ``os.closerange(fd_low, fd_high)`` now calls
+  ``closefrom(fd_low)`` if *fd_high* is greater than or equal to
+  ``sysconf(_SC_OPEN_MAX)``.
+
+  Initial patch by Ed Maste (emaste), Conrad Meyer (cem), Kyle Evans
+  (kevans) and Kubilay Kocak (koobs):
+  https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=242274
+
+- bpo-40360: The :mod:`lib2to3` module is pending deprecation due to
+  :pep:`617`.
+
+- bpo-40138: Fix the Windows implementation of :func:`os.waitpid` for exit
+  code larger than ``INT_MAX >> 8``. The exit status is now interpreted as
+  an unsigned number.
+
+- bpo-39942: Set "__main__" as the default module name when "__name__" is
+  missing in :class:`typing.TypeVar`. Patch by Weipeng Hong.
+
+- bpo-40275: The :mod:`logging` package is now imported lazily in
+  :mod:`unittest` only when the :meth:`~unittest.TestCase.assertLogs`
+  assertion is used.
+
+- bpo-40275: The :mod:`asyncio` package is now imported lazily in
+  :mod:`unittest` only when the :class:`~unittest.IsolatedAsyncioTestCase`
+  class is used.
+
+- bpo-40330: In :meth:`ShareableList.__setitem__`, check the size of a new
+  string item after encoding it to utf-8, not before.
+
+- bpo-40148: Added :meth:`pathlib.Path.with_stem()` to create a new Path
+  with the stem replaced.
+
+- bpo-40325: Deprecated support for set objects in random.sample().
+
+- bpo-40257: Improved help for the :mod:`typing` module. Docstrings are now
+  shown for all special forms and special generic aliases (like ``Union``
+  and ``List``). Using ``help()`` with generic alias like ``List[int]`` will
+  show the help for the correspondent concrete type (``list`` in this case).
+
+- bpo-40257: func:`inspect.getdoc` no longer returns docstring inherited
+  from the type of the object or from parent class if it is a class if it is
+  not defined in the object itself. In :mod:`pydoc` the documentation string
+  is now shown not only for class, function, method etc, but for any object
+  that has its own ``__doc__`` attribute.
+
+- bpo-40287: Fixed ``SpooledTemporaryFile.seek()`` to return the position.
+
+- bpo-40290: Added zscore() to statistics.NormalDist().
+
+- bpo-40282: Allow ``random.getrandbits(0)`` to succeed and to return 0.
+
+- bpo-40286: Add :func:`random.randbytes` function and
+  :meth:`random.Random.randbytes` method to generate random bytes.
+
+- bpo-40277: :func:`collections.namedtuple` now provides a human-readable
+  repr for its field accessors.
+
+- bpo-40270: The included copy of sqlite3 on Windows is now compiled with
+  the json extension. This allows the use of functions such as
+  ``json_object``.
+
+- bpo-29255: Wait in `KqueueSelector.select` when no fds are registered
+
+- bpo-40260: Ensure :mod:`modulefinder` uses :func:`io.open_code` and
+  respects coding comments.
+
+- bpo-40234: Allow again to spawn daemon threads in subinterpreters (revert
+  change which denied them).
+
+- bpo-39207: Workers in :class:`~concurrent.futures.ProcessPoolExecutor` are
+  now spawned on demand, only when there are no available idle workers to
+  reuse. This optimizes startup overhead and reduces the amount of lost CPU
+  time to idle workers. Patch by Kyle Stanley.
+
+- bpo-40091: Fix a hang at fork in the logging module: the new private
+  _at_fork_reinit() method is now used to reinitialize locks at fork in the
+  child process.
+
+- bpo-40149: Implement traverse and clear slots in _abc._abc_data type.
+
+- bpo-40208: Remove deprecated :meth:`symtable.SymbolTable.has_exec`.
+
+- bpo-40196: Fix a bug in the :mod:`symtable` module that was causing
+  incorrectly report global variables as local. Patch by Pablo Galindo.
+
+- bpo-40190: Add support for ``_SC_AIX_REALMEM`` to :func:`posix.sysconf`.
+
+- bpo-40182: Removed the ``_field_types`` attribute of the
+  :class:`typing.NamedTuple` class.
+
+- bpo-36517: Multiple inheritance with :class:`typing.NamedTuple` now raises
+  an error instead of silently ignoring other types.
+
+- bpo-40126: Fixed reverting multiple patches in unittest.mock. Patcher's
+  ``__exit__()`` is now never called if its ``__enter__()`` is failed.
+  Returning true from ``__exit__()`` silences now the exception.
+
+- bpo-40094: CGIHTTPRequestHandler of http.server now logs the CGI script
+  exit code, rather than the CGI script exit status of os.waitpid(). For
+  example, if the script is killed by signal 11, it now logs: "CGI script
+  exit code -11."
+
+- bpo-40108: Improve the error message when triying to import a module using
+  :mod:`runpy` and incorrently use the ".py" extension at the end of the
+  module name. Patch by Pablo Galindo.
+
+- bpo-40094: Add :func:`os.waitstatus_to_exitcode` function: convert a wait
+  status to an exit code.
+
+- bpo-40089: Fix threading._after_fork(): if fork was not called by a thread
+  spawned by threading.Thread, threading._after_fork() now creates a
+  _MainThread instance for _main_thread, instead of a _DummyThread instance.
+
+- bpo-40089: Add a private ``_at_fork_reinit()`` method to
+  :class:`_thread.Lock`, :class:`_thread.RLock`, :class:`threading.RLock`
+  and :class:`threading.Condition` classes: reinitialize the lock at fork in
+  the child process, reset the lock to the unlocked state. Rename also the
+  private ``_reset_internal_locks()`` method of :class:`threading.Event` to
+  ``_at_fork_reinit()``.
+
+- bpo-25780: Expose :data:`~socket.CAN_RAW_JOIN_FILTERS` in the
+  :mod:`socket` module.
+
+- bpo-39503: :class:`~urllib.request.AbstractBasicAuthHandler` of
+  :mod:`urllib.request` now parses all WWW-Authenticate HTTP headers and
+  accepts multiple challenges per header: use the realm of the first Basic
+  challenge.
+
+- bpo-39812: Removed daemon threads from :mod:`concurrent.futures` by adding
+  an internal `threading._register_atexit()`, which calls registered
+  functions prior to joining all non-daemon threads. This allows for
+  compatibility with subinterpreters, which don't support daemon threads.
+
+- bpo-40050: Fix ``importlib._bootstrap_external``: avoid creating a new
+  ``winreg`` builtin module if it's already available in
+  :data:`sys.modules`, and remove redundant imports.
+
+- bpo-40014: Fix ``os.getgrouplist()``: if ``getgrouplist()`` function fails
+  because the group list is too small, retry with a larger group list. On
+  failure, the glibc implementation of ``getgrouplist()`` sets ``ngroups``
+  to the total number of groups. For other implementations, double the group
+  list size.
+
+- bpo-40017: Add :data:`time.CLOCK_TAI` constant if the operating system
+  support it.
+
+- bpo-40016: In re docstring, clarify the relationship between inline and
+  argument compile flags.
+
+- bpo-39953: Update internal table of OpenSSL error codes in the ``ssl``
+  module.
+
+- bpo-36144: Added :pep:`584` operators to
+  :class:`weakref.WeakValueDictionary`.
+
+- bpo-36144: Added :pep:`584` operators to
+  :class:`weakref.WeakKeyDictionary`.
+
+- bpo-38891: Fix linear runtime behaviour of the `__getitem__` and
+  `__setitem__` methods in
+  :class:`multiprocessing.shared_memory.ShareableList`. This avoids
+  quadratic performance when iterating a `ShareableList`. Patch by Thomas
+  Krennwallner.
+
+- bpo-39682: Remove undocumented support for *closing* a `pathlib.Path`
+  object via its context manager. The context manager magic methods remain,
+  but they are now a no-op, making `Path` objects immutable.
+
+- bpo-36144: Added :pep:`584` operators (``|`` and ``|=``) to
+  :class:`collections.ChainMap`.
+
+- bpo-39011: Normalization of line endings in ElementTree attributes was
+  removed, as line endings which were replaced by entity numbers should be
+  preserved in original form.
+
+- bpo-38410: Properly handle :func:`sys.audit` failures in
+  :func:`sys.set_asyncgen_hooks`.
+
+- bpo-36541: lib2to3 now recognizes named assignment expressions (the walrus
+  operator, ``:=``)
+
+- bpo-35967: In platform, delay the invocation of 'uname -p' until the
+  processor attribute is requested.
+
+- bpo-35113: :meth:`inspect.getsource` now returns correct source code for
+  inner class with same name as module level class. Decorators are also
+  returned as part of source of the class. Patch by Karthikeyan
+  Singaravelan.
+
+- bpo-33262: Deprecate passing None as an argument for
+  :func:`shlex.split()`'s ``s`` parameter.  Patch by Zackery Spytz.
+
+- bpo-31758: Prevent crashes when using an uninitialized
+  ``_elementtree.XMLParser`` object. Patch by Oren Milman.
+
+Documentation
+-------------
+
+- bpo-27635: The pickle documentation incorrectly claimed that ``__new__``
+  isn't called by default when unpickling.
+
+- bpo-39879: Updated :ref:`datamodel` docs to include :func:`dict` insertion
+  order preservation. Patch by Furkan Onder and Samy Lahfa.
+
+- bpo-38387: Document :c:macro:`PyDoc_STRVAR` macro in the C-API reference.
+
+- bpo-13743: Some methods within xml.dom.minidom.Element class are now
+  better documented.
+
+Tests
+-----
+
+- bpo-31904: Set expected default encoding in test_c_locale_coercion.py for
+  VxWorks RTOS.
+
+- bpo-40162: Update Travis CI configuration to OpenSSL 1.1.1f.
+
+- bpo-40146: Update OpenSSL to 1.1.1f in Azure Pipelines.
+
+- bpo-40094: Add :func:`test.support.wait_process` function.
+
+- bpo-40003: ``test.bisect_cmd`` now copies Python command line options like
+  ``-O`` or ``-W``. Moreover, emit a warning if ``test.bisect_cmd`` is used
+  with ``-w``/``--verbose2`` option.
+
+- bpo-39380: Add the encoding in :class:`ftplib.FTP` and
+  :class:`ftplib.FTP_TLS` to the constructor as keyword-only and change the
+  default from ``latin-1`` to ``utf-8`` to follow :rfc:`2640`.
+
+- bpo-39793: Use the same domain when testing ``make_msgid``. Patch by
+  Batuhan Taskaya.
+
+- bpo-1812: Fix newline handling in doctest.testfile when loading from a
+  package whose loader has a get_data method. Patch by Peter Donis.
+
+Build
+-----
+
+- bpo-38360: Support single-argument form of macOS -isysroot flag.
+
+- bpo-40158: Fix CPython MSBuild Properties in NuGet Package
+  (build/native/python.props)
+
+- bpo-38527: Fix configure check on Solaris for "float word ordering":
+  sometimes, the correct "grep" command was not being used. Patch by Arnon
+  Yaari.
+
+Windows
+-------
+
+- bpo-40164: Updates Windows to OpenSSL 1.1.1f
+
+- bpo-8901: Ignore the Windows registry when the ``-E`` option is used.
+
+macOS
+-----
+
+- bpo-38329: python.org macOS installers now update the Current version
+  symlink of /Library/Frameworks/Python.framework/Versions for 3.9 installs.
+  Previously, Current was only updated for Python 2.x installs. This should
+  make it easier to embed Python 3 into other macOS applications.
+
+- bpo-40164: Update macOS installer builds to use OpenSSL 1.1.1g.
+
+IDLE
+----
+
+- bpo-38439: Add a 256×256 pixel IDLE icon to support more modern
+  environments. Created by Andrew Clover. Delete the unused macOS idle.icns
+  icon file.
+
+- bpo-38689: IDLE will no longer freeze when inspect.signature fails when
+  fetching a calltip.
+
+Tools/Demos
+-----------
+
+- bpo-40385: Removed the checkpyc.py tool. Please see compileall without
+  force mode as a potential alternative.
+
+- bpo-40179: Fixed translation of ``#elif`` in Argument Clinic.
+
+- bpo-40094: Fix ``which.py`` script exit code: it now uses
+  :func:`os.waitstatus_to_exitcode` to convert :func:`os.system` exit status
+  into an exit code.
+
+C API
+-----
+
+- bpo-40241: Move the :c:type:`PyGC_Head` structure to the internal C API.
+
+- bpo-40170: Convert :c:func:`PyObject_IS_GC` macro to a function to hide
+  implementation details.
+
+- bpo-40241: Add the functions :c:func:`PyObject_GC_IsTracked` and
+  :c:func:`PyObject_GC_IsFinalized` to the public API to allow to query if
+  Python objects are being currently tracked or have been already finalized
+  by the garbage collector respectively. Patch by Pablo Galindo.
+
+- bpo-40170: The :c:func:`PyObject_NEW` macro becomes an alias to the
+  :c:func:`PyObject_New` macro, and the :c:func:`PyObject_NEW_VAR` macro
+  becomes an alias to the :c:func:`PyObject_NewVar` macro, to hide
+  implementation details. They no longer access directly the
+  :c:member:`PyTypeObject.tp_basicsize` member.
+
+- bpo-40170: :c:func:`PyType_HasFeature` now always calls
+  :c:func:`PyType_GetFlags` to hide implementation details. Previously, it
+  accessed directly the :c:member:`PyTypeObject.tp_flags` member when the
+  limited C API was not used.
+
+- bpo-40170: Convert the :c:func:`PyObject_GET_WEAKREFS_LISTPTR` macro to a
+  function to hide implementation details: the macro accessed directly to
+  the :c:member:`PyTypeObject.tp_weaklistoffset` member.
+
+- bpo-40170: Convert :c:func:`PyObject_CheckBuffer` macro to a function to
+  hide implementation details: the macro accessed directly the
+  :c:member:`PyTypeObject.tp_as_buffer` member.
+
+- bpo-40170: Always declare :c:func:`PyIndex_Check` as an opaque function to
+  hide implementation details: remove ``PyIndex_Check()`` macro. The macro
+  accessed directly the :c:member:`PyTypeObject.tp_as_number` member.
+
+- bpo-39947: Add :c:func:`PyThreadState_GetID` function: get the unique
+  identifier of a Python thread state.
+
+
 What's New in Python 3.9.0 alpha 5?
 ===================================
 
