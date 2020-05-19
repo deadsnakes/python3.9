@@ -9,10 +9,10 @@ Subject: older sphinx
  3 files changed, 2 insertions(+), 84 deletions(-)
 
 diff --git a/Doc/conf.py b/Doc/conf.py
-index 32db343..e8b2c4a 100644
+index 12d74ea..8a758b0 100644
 --- a/Doc/conf.py
 +++ b/Doc/conf.py
-@@ -45,7 +45,7 @@ today_fmt = '%B %d, %Y'
+@@ -46,7 +46,7 @@ today_fmt = '%B %d, %Y'
  highlight_language = 'python3'
  
  # Minimum version of sphinx required
