@@ -86,6 +86,7 @@ are:
   errno			builtin
   exceptions		builtin
   fcntl			extension
+  filecmp		module
   fnmatch		module
   functools		module
   gc			builtin
