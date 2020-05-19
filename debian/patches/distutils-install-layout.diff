@@ -157,10 +157,10 @@ index 0ddc736..0a71b61 100644
          self.outputs = [self.target]
  
 diff --git a/Lib/distutils/sysconfig.py b/Lib/distutils/sysconfig.py
-index 01ee519..69520e5 100644
+index 37feae5..6edad79 100644
 --- a/Lib/distutils/sysconfig.py
 +++ b/Lib/distutils/sysconfig.py
-@@ -139,6 +139,7 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
+@@ -138,6 +138,7 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
      If 'prefix' is supplied, use it instead of sys.base_prefix or
      sys.base_exec_prefix -- i.e., ignore 'plat_specific'.
      """
@@ -168,7 +168,7 @@ index 01ee519..69520e5 100644
      if prefix is None:
          if standard_lib:
              prefix = plat_specific and BASE_EXEC_PREFIX or BASE_PREFIX
-@@ -157,6 +158,12 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
+@@ -156,6 +157,12 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
                                   "python" + get_python_version())
          if standard_lib:
              return libpython
@@ -217,10 +217,10 @@ index 51c80e0..2ada481 100644
  
      def test_debug_mode(self):
 diff --git a/Lib/pydoc.py b/Lib/pydoc.py
-index 6d42e9a..5a3c4a9 100755
+index e595c39..6d9fc26 100755
 --- a/Lib/pydoc.py
 +++ b/Lib/pydoc.py
-@@ -413,6 +413,7 @@ class Doc:
+@@ -505,6 +505,7 @@ class Doc:
                                   'marshal', 'posix', 'signal', 'sys',
                                   '_thread', 'zipimport') or
               (file.startswith(basedir) and
@@ -278,10 +278,10 @@ index e981a14..4929a18 100644
              sitepackages.append(prefix)
  
 diff --git a/Lib/test/test_site.py b/Lib/test/test_site.py
-index 12e357c..9522f66 100644
+index 957e7a4..bda211c 100644
 --- a/Lib/test/test_site.py
 +++ b/Lib/test/test_site.py
-@@ -268,16 +268,16 @@ class HelperFunctionsTests(unittest.TestCase):
+@@ -269,16 +269,16 @@ class HelperFunctionsTests(unittest.TestCase):
          if os.sep == '/':
              # OS X, Linux, FreeBSD, etc
              if sys.platlibdir != "lib":
