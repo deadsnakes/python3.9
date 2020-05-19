@@ -7,10 +7,10 @@ Subject: disable docs theme
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/Doc/conf.py b/Doc/conf.py
-index e8b2c4a..1cfea6d 100644
+index 8a758b0..e29dc4f 100644
 --- a/Doc/conf.py
 +++ b/Doc/conf.py
-@@ -65,13 +65,13 @@ master_doc = 'contents'
+@@ -66,13 +66,13 @@ master_doc = 'contents'
  # -----------------------
  
  # Use our custom theme.

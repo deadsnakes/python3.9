@@ -30,10 +30,10 @@ index ce4e8c9..e8cec76 100644
     +---------------------------------------------------------+-----------------------------------+--------------+
     | Slot                                                    | :ref:`Type <slot-typedefs-table>` | special      |
 diff --git a/Doc/conf.py b/Doc/conf.py
-index 1cfea6d..a683929 100644
+index e29dc4f..613d751 100644
 --- a/Doc/conf.py
 +++ b/Doc/conf.py
-@@ -45,7 +45,7 @@ today_fmt = '%B %d, %Y'
+@@ -46,7 +46,7 @@ today_fmt = '%B %d, %Y'
  highlight_language = 'python3'
  
  # Minimum version of sphinx required
@@ -43,7 +43,7 @@ index 1cfea6d..a683929 100644
  # Ignore any .rst files in the venv/ directory.
  exclude_patterns = ['venv/*', 'README.rst']
 diff --git a/Doc/tools/extensions/pyspecific.py b/Doc/tools/extensions/pyspecific.py
-index bc51555..fe1234e 100644
+index 6751f01..b49ac7b 100644
 --- a/Doc/tools/extensions/pyspecific.py
 +++ b/Doc/tools/extensions/pyspecific.py
 @@ -9,6 +9,7 @@
