@@ -2,6 +2,359 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.0 beta 1?
+==================================
+
+*Release date: 2020-05-19*
+
+Security
+--------
+
+- bpo-40501: :mod:`uuid` no longer uses :mod:`ctypes` to load
+  :file:`libuuid` or :file:`rpcrt4.dll` at runtime.
+
+Core and Builtins
+-----------------
+
+- bpo-40663: Correctly generate annotations where parentheses are omitted
+  but required (e.g: ``Type[(str, int, *other))]``.
+
+- bpo-40596: Fixed :meth:`str.isidentifier` for non-canonicalized strings
+  containing non-BMP characters on Windows.
+
+- bpo-40593: Improved syntax errors for invalid characters in source code.
+
+- bpo-40585: Fixed a bug when using :func:`codeop.compile_command` that was
+  causing exceptions to be swallowed with the new parser. Patch by Pablo
+  Galindo
+
+- bpo-40566: Apply :pep:`573` to :mod:`abc`.
+
+- bpo-40502: Initialize ``n->n_col_offset``. (Patch by Joannah Nanjekye)
+
+- bpo-40527: Fix command line argument parsing: no longer write errors
+  multiple times into stderr.
+
+- bpo-1635741: Port :mod:`errno` to multiphase initialization (:pep:`489`).
+
+- bpo-40523: Add pass-throughs for :func:`hash` and :func:`reversed` to
+  :class:`weakref.proxy` objects. Patch by Pablo Galindo.
+
+- bpo-1635741: Port :mod:`syslog` to multiphase initialization (:pep:`489`).
+
+- bpo-40246: Reporting a specialised error message for invalid string
+  prefixes, which was introduced in :issue:`40246`, is being reverted due to
+  backwards compatibility concerns for strings that immediately follow a
+  reserved keyword without whitespace between them. Constructs like
+  `bg="#d00" if clear else"#fca"` were failing to parse, which is not an
+  acceptable breakage on such short notice.
+
+- bpo-40417: Fix imp module deprecation warning when PyImport_ReloadModule
+  is called. Patch by Robert Rouhani.
+
+- bpo-40408: Fixed support of nested type variables in GenericAlias (e.g.
+  ``list[list[T]]``).
+
+- bpo-1635741: Port _stat module to multiphase initialization (:pep:`489`).
+
+- bpo-29587: Enable implicit exception chaining when calling
+  :meth:`generator.throw`.
+
+- bpo-40328: Add tools for generating mappings headers for CJKCodecs.
+
+- bpo-40228: Setting frame.f_lineno is now robust w.r.t. changes in the
+  source-to-bytecode compiler
+
+- bpo-38880: Added the ability to list interpreters associated with channel
+  ends in the internal subinterpreters module.
+
+- bpo-37986: Improve performance of :c:func:`PyLong_FromDouble` for values
+  that fit into :c:type:`long`.
+
+Library
+-------
+
+- bpo-40662: Fixed :func:`ast.get_source_segment` for ast nodes that have
+  incomplete location information. Patch by Irit Katriel.
+
+- bpo-40665: Convert :mod:`bisect` to use Argument Clinic.
+
+- bpo-40536: Added the :func:`~zoneinfo.available_timezones` function to the
+  :mod:`zoneinfo` module. Patch by Paul Ganssle.
+
+- bpo-40645: The :class:`hmac.HMAC` exposes internal implementation details.
+  The attributes ``digest_cons``, ``inner``, and ``outer`` are deprecated
+  and will be removed in the future.
+
+- bpo-40645: The internal module ``_hashlib`` wraps and exposes OpenSSL's
+  HMAC API. The new code will be used in Python 3.10 after the internal
+  implementation details of the pure Python HMAC module are no longer part
+  of the public API.
+
+- bpo-40637: Builtin hash modules can now be disabled or selectively enabled
+  with ``configure --with-builtin-hashlib-hashes=sha3,blake1`` or
+  ``--without-builtin-hashlib-hashes``.
+
+- bpo-37630: The :mod:`hashlib` module can now use SHA3 hashes and SHAKE XOF
+  from OpenSSL when available.
+
+- bpo-40479: The :mod:`hashlib` now compiles with OpenSSL 3.0.0-alpha2.
+
+- bpo-40257: Revert changes to :func:`inspect.getdoc`.
+
+- bpo-40607: When cancelling a task due to timeout, :meth:`asyncio.wait_for`
+  will now propagate the exception if an error happens during cancellation.
+  Patch by Roman Skurikhin.
+
+- bpo-40612: Fix edge cases in SyntaxError formatting. If the offset is <=
+  0, no caret is printed. If the offset is > line length, the caret is
+  printed pointing just after the last character.
+
+- bpo-40597: If text content lines are longer than policy.max_line_length,
+  always use a content-encoding to make sure they are wrapped.
+
+- bpo-40571: Added functools.cache() as a simpler, more discoverable way to
+  access the unbounded cache variant of lru_cache(maxsize=None).
+
+- bpo-40503: :pep:`615`, the :mod:`zoneinfo` module. Adds support for the
+  IANA time zone database.
+
+- bpo-40397: Removed attributes ``__args__`` and ``__parameters__`` from
+  special generic aliases like ``typing.List`` (not subscripted).
+
+- bpo-40549: Convert posixmodule.c ("posix" or "nt" module) to the
+  multiphase initialization (PEP 489).
+
+- bpo-31033: Add a ``msg`` argument to :meth:`Future.cancel` and
+  :meth:`Task.cancel`.
+
+- bpo-40541: Added an optional *counts* parameter to random.sample().
+
+- bpo-40515: The :mod:`ssl` and :mod:`hashlib` modules now actively check
+  that OpenSSL is build with thread support. Python 3.7.0 made thread
+  support mandatory and no longer works safely with a no-thread builds.
+
+- bpo-31033: When a :class:`asyncio.Task` is cancelled, the exception
+  traceback now chains all the way back to where the task was first
+  interrupted.
+
+- bpo-40504: :func:`functools.lru_cache` objects can now be the targets of
+  weakrefs.
+
+- bpo-40559: Fix possible memory leak in the C implementation of
+  :class:`asyncio.Task`.
+
+- bpo-40480: ``fnmatch.fnmatch()`` could take exponential time in the
+  presence of multiple ``*`` pattern characters.  This was repaired by
+  generating more elaborate regular expressions to avoid futile
+  backtracking.
+
+- bpo-40495: :mod:`compileall` is now able to use hardlinks to prevent
+  duplicates in a case when ``.pyc`` files for different optimization levels
+  have the same content.
+
+- bpo-40457: The ssl module now support OpenSSL builds without TLS 1.0 and
+  1.1 methods.
+
+- bpo-40355: Improve error reporting in :func:`ast.literal_eval` in the
+  presence of malformed :class:`ast.Dict` nodes instead of silently ignoring
+  any non-conforming elements. Patch by Curtis Bucher.
+
+- bpo-40465: Deprecated the optional *random* argument to
+  *random.shuffle()*.
+
+- bpo-40459: :func:`platform.win32_ver` now produces correct *ptype* strings
+  instead of empty strings.
+
+- bpo-39435: The first argument of :func:`pickle.loads` is now
+  positional-only.
+
+- bpo-39305: Update :mod:`nntplib` to merge :class:`nntplib.NNTP` and
+  :class:`nntplib._NNTPBase`. Patch by Dong-hee Na.
+
+- bpo-32494: Update :mod:`dbm.gnu` to use gdbm_count if possible when
+  calling :func:`len`. Patch by Dong-hee Na.
+
+- bpo-40453: Add ``isolated=True`` keyword-only parameter to
+  ``_xxsubinterpreters.create()``. An isolated subinterpreter cannot spawn
+  threads, spawn a child process or call ``os.fork()``.
+
+- bpo-40286: Remove ``_random.Random.randbytes()``: the C implementation of
+  ``randbytes()``. Implement the method in Python to ease subclassing:
+  ``randbytes()`` now directly reuses ``getrandbits()``.
+
+- bpo-40394: Added default arguments to
+  :meth:`difflib.SequenceMatcher.find_longest_match()`.
+
+- bpo-39995: Fix a race condition in concurrent.futures._ThreadWakeup:
+  access to _ThreadWakeup is now protected with the shutdown lock.
+
+- bpo-30966: ``Process.shutdown(wait=True)`` of :mod:`concurrent.futures`
+  now closes explicitly the result queue.
+
+- bpo-30966: Add a new :meth:`~multiprocessing.SimpleQueue.close` method to
+  the :class:`~multiprocessing.SimpleQueue` class to explicitly close the
+  queue.
+
+- bpo-39966: Revert bpo-25597. :class:`unittest.mock.MagicMock` with wraps'
+  set uses default return values for magic methods.
+
+- bpo-39791: Added ``files()`` function to importlib.resources with support
+  for subdirectories in package data, matching backport in
+  importlib_resources 1.5.
+
+- bpo-40375: :meth:`imaplib.IMAP4.unselect` is added. Patch by Dong-hee Na.
+
+- bpo-40389: ``repr()`` now returns ``typing.Optional[T]`` when called for
+  ``typing.Union`` of two types, one of which is ``NoneType``.
+
+- bpo-40291: Add support for CAN_J1939 sockets (available on Linux 5.4+)
+
+- bpo-40273: :class:`types.MappingProxyType` is now reversible.
+
+- bpo-39075: The repr for :class:`types.SimpleNamespace` is now insertion
+  ordered rather than alphabetical.
+
+- bpo-40192: On AIX, :func:`~time.thread_time` is now implemented with
+  ``thread_cputime()`` which has nanosecond resolution, rather than
+  ``clock_gettime(CLOCK_THREAD_CPUTIME_ID)`` which has a resolution of 10
+  ms. Patch by Batuhan Taskaya.
+
+- bpo-40025: Raise TypeError when _generate_next_value_ is defined after
+  members. Patch by Ethan Onstott.
+
+- bpo-39058: In the argparse module, the repr for Namespace() and other
+  argument holders now displayed in the order attributes were added.
+  Formerly, it displayed in alphabetical order even though argument order is
+  preserved the user visible parts of the module.
+
+- bpo-24416: The ``isocalendar()`` methods of :class:`datetime.date` and
+  :class:`datetime.datetime` now return a :term:`named tuple` instead of a
+  :class:`tuple`.
+
+Documentation
+-------------
+
+- bpo-34790: Add version of removal for explicit passing of coros to
+  `asyncio.wait()`'s documentation
+
+- bpo-40561: Provide docstrings for webbrowser open functions.
+
+- bpo-40499: Mention that :func:`asyncio.wait` requires a non-empty set of
+  awaitables.
+
+- bpo-39705: Tutorial example for sorted() in the Loop Techniques section is
+  given a better explanation. Also a new example is included to explain
+  sorted()'s basic behavior.
+
+- bpo-39435: Fix an incorrect signature for :func:`pickle.loads` in the docs
+
+Tests
+-----
+
+- bpo-40055: distutils.tests now saves/restores warnings filters to leave
+  them unchanged. Importing tests imports docutils which imports
+  pkg_resources which adds a warnings filter.
+
+- bpo-40436: test_gdb and test.pythoninfo now check gdb command exit code.
+
+Build
+-----
+
+- bpo-40653: Move _dirnameW out of HAVE_SYMLINK to fix a potential compiling
+  issue.
+
+- bpo-40514: Add ``--with-experimental-isolated-subinterpreters`` build
+  option to ``configure``: better isolate subinterpreters, experimental
+  build mode.
+
+Windows
+-------
+
+- bpo-40650: Include winsock2.h in pytime.c for timeval.
+
+- bpo-40458: Increase reserved stack space to prevent overflow crash on
+  Windows.
+
+- bpo-39148: Add IPv6 support to :mod:`asyncio` datagram endpoints in
+  ProactorEventLoop. Change the raised exception for unknown address
+  families to ValueError as it's not coming from Windows API.
+
+macOS
+-----
+
+- bpo-34956: _tkinter now builds and links with non-system Tcl and Tk
+  frameworks if they are installed in /Library/Frameworks as had been the
+  case on older releases of macOS. If a macOS SDK is explicitly configured,
+  by using ./configure --enable-universalsdk= or -isysroot, only a
+  Library/Frameworks directory in the SDK itself is searched. The default
+  behavior can still be overridden with configure --with-tcltk-includes and
+  --with-tcltk-libs.
+
+- bpo-35569: Expose RFC 3542 IPv6 socket options.
+
+Tools/Demos
+-----------
+
+- bpo-40479: Update multissltest helper to test with latest OpenSSL 1.0.2,
+  1.1.0, 1.1.1, and 3.0.0-alpha.
+
+- bpo-40431: Fix a syntax typo in ``turtledemo`` that now raises a
+  ``SyntaxError``.
+
+- bpo-40163: Fix multissltest tool. OpenSSL has changed download URL for old
+  releases. The multissltest tool now tries to download from current and old
+  download URLs.
+
+C API
+-----
+
+- bpo-39465: Remove the ``_PyUnicode_ClearStaticStrings()`` function from
+  the C API.
+
+- bpo-38787: Add PyCFunction_CheckExact() macro for exact type checks now
+  that we allow subtypes of PyCFunction, as well as PyCMethod_CheckExact()
+  and PyCMethod_Check() for the new PyCMethod subtype.
+
+- bpo-40545: Declare ``_PyErr_GetTopmostException()`` with ``PyAPI_FUNC()``
+  to properly export the function in the C API. The function remains private
+  (``_Py``) prefix.
+
+- bpo-40412: Nullify inittab_copy during finalization, preventing future
+  interpreter initializations in an embedded situation from crashing. Patch
+  by Gregory Szorc.
+
+- bpo-40429: The :c:func:`PyThreadState_GetFrame` function now returns a
+  strong reference to the frame.
+
+- bpo-40428: Remove the following functions from the C API. Call
+  :c:func:`PyGC_Collect` explicitly to free all free lists.
+
+  * ``PyAsyncGen_ClearFreeLists()``
+  * ``PyContext_ClearFreeList()``
+  * ``PyDict_ClearFreeList()``
+  * ``PyFloat_ClearFreeList()``
+  * ``PyFrame_ClearFreeList()``
+  * ``PyList_ClearFreeList()``
+  * ``PySet_ClearFreeList()``
+  * ``PyTuple_ClearFreeList()``
+
+- bpo-40421: New :c:func:`PyFrame_GetBack` function: get the frame next
+  outer frame.
+
+- bpo-40421: New :c:func:`PyFrame_GetCode` function: return a borrowed
+  reference to the frame code.
+
+- bpo-40217: Ensure that instances of types created with
+  :c:func:`PyType_FromSpecWithBases` will visit its class object when
+  traversing references in the garbage collector (implemented as an
+  extension of the provided :c:member:`~PyTypeObject.tp_traverse`). Patch by
+  Pablo Galindo.
+
+- bpo-38787: Module C state is now accessible from C-defined heap type
+  methods (:pep:`573`). Patch by Marcel Plch and Petr Viktorin.
+
+
 What's New in Python 3.9.0 alpha 6?
 ===================================
 
