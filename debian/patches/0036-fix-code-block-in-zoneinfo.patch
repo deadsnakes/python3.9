@@ -1,0 +1,30 @@
+From: Anthony Sottile <asottile@umich.edu>
+Date: Mon, 18 May 2020 18:53:36 -0700
+Subject: fix code-block in zoneinfo
+
+---
+ Doc/library/zoneinfo.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Doc/library/zoneinfo.rst b/Doc/library/zoneinfo.rst
+index 1b6f2e7..3a4c12a 100644
+--- a/Doc/library/zoneinfo.rst
++++ b/Doc/library/zoneinfo.rst
+@@ -300,7 +300,7 @@ The behavior of a ``ZoneInfo`` file depends on how it was constructed:
+    constructed from ``ZoneInfo("Europe/Berlin")``, one would expect the
+    following behavior:
+ 
+-   .. code-block::
++   .. code-block:: pycon
+ 
+        >>> a = ZoneInfo("Europe/Berlin")
+        >>> b = pickle.loads(europe_berlin_pkl)
+@@ -314,7 +314,7 @@ The behavior of a ``ZoneInfo`` file depends on how it was constructed:
+    constructed from ``ZoneInfo.no_cache("Europe/Berlin")``, one would expect
+    the following behavior:
+ 
+-   .. code-block::
++   .. code-block:: pycon
+ 
+        >>> a = ZoneInfo("Europe/Berlin")
+        >>> b = pickle.loads(europe_berlin_pkl_nc)
