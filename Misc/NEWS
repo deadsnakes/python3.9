@@ -2,6 +2,216 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.0 beta 3?
+==================================
+
+*Release date: 2020-06-09*
+
+Library
+-------
+
+- bpo-40924: `importlib.resources`: Reverted ``TraversableResources``
+  implementations from the built-in loaders (SourceFileLoader and
+  ZipImporter) as it was an incompatible change introduced in 3.9.0 beta 2
+  causing through a chain of events for root TLS certificates to be missing.
+
+Build
+-----
+
+- bpo-40684: ``make install`` now uses the ``PLATLIBDIR`` variable for the
+  destination ``lib-dynload/`` directory when ``./configure
+  --with-platlibdir`` is used.
+
+
+What's New in Python 3.9.0 beta 2?
+==================================
+
+*Release date: 2020-06-08*
+
+Core and Builtins
+-----------------
+
+- bpo-40904: Fix possible segfault in the new PEG parser when parsing
+  f-string containing yield statements with no value (:code:`f"{yield}"`).
+  Patch by Pablo Galindo
+
+- bpo-40903: Fixed a possible segfault in the new PEG parser when producing
+  error messages for invalid assignments of the form :code:`p=p=`. Patch by
+  Pablo Galindo
+
+- bpo-40880: Fix invalid memory read in the new parser when checking
+  newlines in string literals. Patch by Pablo Galindo.
+
+- bpo-40883: Fix memory leak in when parsing f-strings in the new parser.
+  Patch by Pablo Galindo
+
+- bpo-40870: Raise :exc:`ValueError` when validating custom AST's where the
+  constants ``True``, ``False`` and ``None`` are used within a
+  :class:`ast.Name` node.
+
+- bpo-40854: Allow overriding :data:`sys.platlibdir` via a new
+  :envvar:`PYTHONPLATLIBDIR` environment variable.
+
+- bpo-40826: Fix GIL usage in :c:func:`PyOS_Readline`: lock the GIL to set
+  an exception and pass the Python thread state when checking if there is a
+  pending signal.
+
+- bpo-40780: Fix a corner case where g-style string formatting of a float
+  failed to remove trailing zeros.
+
+- bpo-38964: When there's a :exc:`SyntaxError` in the expression part of an
+  fstring, the filename attribute of the :exc:`SyntaxError` gets correctly
+  set to the name of the file the fstring resides in.
+
+- bpo-40750: Support the "-d" debug flag in the new PEG parser. Patch by
+  Pablo Galindo
+
+- bpo-40217: Instances of types created with
+  :c:func:`PyType_FromSpecWithBases` will no longer automatically visit
+  their class object when traversing references in the garbage collector.
+  The user is expected to manually visit the object's class. Patch by Pablo
+  Galindo.
+
+- bpo-40696: Fix a hang that can arise after :meth:`generator.throw` due to
+  a cycle in the exception context chain.
+
+Library
+-------
+
+- bpo-39791: Refresh importlib.metadata from importlib_metadata 1.6.1.
+
+- bpo-40807: Stop codeop._maybe_compile, used by code.InteractiveInterpreter
+  (and IDLE). from from emitting each warning three times.
+
+- bpo-39791: Built-in loaders (SourceFileLoader and ZipImporter) now supply
+  ``TraversableResources`` implementations for ``ResourceReader``, and the
+  fallback function has been removed.
+
+- bpo-17005: The topological sort functionality that was introduced
+  initially in the :mod:`functools` module has been moved to a new
+  :mod:`graphlib` module to better accommodate the new tools and keep the
+  original scope of the :mod:`functools` module. Patch by Pablo Galindo
+
+- bpo-40777: Initialize PyDateTime_IsoCalendarDateType.tp_base at run-time
+  to avoid errors on some compilers.
+
+- bpo-40767: :mod:`webbrowser` now properly finds the default browser in
+  pure Wayland systems by checking the WAYLAND_DISPLAY environment variable.
+  Patch contributed by Jérémy Attali.
+
+- bpo-40791: :func:`hashlib.compare_digest` uses OpenSSL's
+  ``CRYPTO_memcmp()`` function when OpenSSL is available.
+
+- bpo-40795: :mod:`ctypes` module: If ctypes fails to convert the result of
+  a callback or if a ctypes callback function raises an exception,
+  sys.unraisablehook is now called with an exception set. Previously, the
+  error was logged into stderr by :c:func:`PyErr_Print`.
+
+- bpo-30008: Fix :mod:`ssl` code to be compatible with OpenSSL 1.1.x builds
+  that use ``no-deprecated`` and ``--api=1.1.0``.
+
+- bpo-30064: Fix asyncio ``loop.sock_*`` race condition issue
+
+- bpo-40759: Deprecate the :mod:`symbol` module.
+
+- bpo-40737: Fix possible reference leak for :mod:`sqlite3` initialization.
+
+- bpo-40698: :mod:`distutils` upload creates SHA2-256 and Blake2b-256
+  digests. MD5 digests is skipped if platform blocks MD5.
+
+- bpo-40695: :mod:`hashlib` no longer falls back to builtin hash
+  implementations when OpenSSL provides a hash digest and the algorithm is
+  blocked by security policy.
+
+- bpo-9216: func:`hashlib.new` passed ``usedforsecurity`` to OpenSSL EVP
+  constructor ``_hashlib.new()``. test_hashlib and test_smtplib handle
+  strict security policy better.
+
+- bpo-40614: :func:`ast.parse` will not parse self documenting expressions
+  in f-strings when passed ``feature_version`` is less than ``(3, 8)``.
+
+- bpo-40671: Prepare ``_hashlib`` for :pep:`489` and use
+  :c:func:`PyModule_AddType`.
+
+- bpo-32309: Added a new :term:`coroutine` :func:`asyncio.to_thread`. It is
+  mainly used for running IO-bound functions in a separate thread to avoid
+  blocking the event loop, and essentially works as a high-level version of
+  :meth:`~asyncio.loop.run_in_executor` that can directly take keyword
+  arguments.
+
+- bpo-40630: Added :func:`tracemalloc.reset_peak` to set the peak size of
+  traced memory blocks to the current size, to measure the peak of specific
+  pieces of code.
+
+- bpo-13097: ``ctypes`` now raises an ``ArgumentError`` when a callback is
+  invoked with more than 1024 arguments.
+
+- bpo-23082: Updated the error message and docs of PurePath.relative_to() to
+  better reflect the function behaviour.
+
+- bpo-39244: Fixed :class:`multiprocessing.context.get_all_start_methods` to
+  properly return the default method first on macOS.
+
+- bpo-39040: Fix parsing of invalid mime headers parameters by collapsing
+  whitespace between encoded words in a bare-quote-string.
+
+- bpo-35714: :exc:`struct.error` is now raised if there is a null character
+  in a :mod:`struct` format string.
+
+- bpo-36290: AST nodes are now raising :exc:`TypeError` on conflicting
+  keyword arguments. Patch contributed by Rémi Lapeyre.
+
+Tests
+-----
+
+- bpo-17258: Skip some :mod:`multiprocessing` tests when MD5 hash digest is
+  blocked.
+
+Build
+-----
+
+- bpo-40514: Remove ``--with-experimental-isolated-subinterpreters``
+  configure option in Python 3.9: the experiment continues in the master
+  branch, but it's no longer needed in 3.9.
+
+- bpo-40683: Fixed an issue where the :mod:`zoneinfo` module and its tests
+  were not included when Python is installed with ``make``.
+
+Windows
+-------
+
+- bpo-39631: Changes the registered MIME type for ``.py`` files on Windows
+  to ``text/x-python`` instead of ``text/plain``.
+
+- bpo-40677: Manually define IO_REPARSE_TAG_APPEXECLINK in case some old
+  Windows SDK doesn't have it.
+
+macOS
+-----
+
+- bpo-40741: Update macOS installer to use SQLite 3.32.2.
+
+IDLE
+----
+
+- bpo-39885: Make context menu Cut and Copy work again when right-clicking
+  within a selection.
+
+- bpo-40723: Make test_idle pass when run after import.
+
+C API
+-----
+
+- bpo-40910: Export explicitly the :c:func:`Py_GetArgcArgv` function to the
+  C API and document the function. Previously, it was exported implicitly
+  which no longer works since Python is built with ``-fvisibility=hidden``.
+
+- bpo-40724: Allow defining buffer slots in type specs.
+
+- bpo-40826: :c:func:`PyOS_InterruptOccurred` now fails with a fatal error
+  if it is called with the GIL released.
+
+
 What's New in Python 3.9.0 beta 1?
 ==================================
 
@@ -283,13 +493,13 @@ Windows
 macOS
 -----
 
-- bpo-34956: _tkinter now builds and links with non-system Tcl and Tk
-  frameworks if they are installed in /Library/Frameworks as had been the
-  case on older releases of macOS. If a macOS SDK is explicitly configured,
-  by using ./configure --enable-universalsdk= or -isysroot, only a
-  Library/Frameworks directory in the SDK itself is searched. The default
-  behavior can still be overridden with configure --with-tcltk-includes and
-  --with-tcltk-libs.
+- bpo-34956: When building Python on macOS from source, ``_tkinter`` now
+  links with non-system Tcl and Tk frameworks if they are installed in
+  ``/Library/Frameworks``, as had been the case on older releases of macOS.
+  If a macOS SDK is explicitly configured, by using
+  ``--enable-universalsdk=`` or ``-isysroot``, only the SDK itself is
+  searched. The default behavior can still be overridden with
+  ``--with-tcltk-includes`` and ``--with-tcltk-libs``.
 
 - bpo-35569: Expose RFC 3542 IPv6 socket options.
 
@@ -1181,7 +1391,7 @@ Build
 - bpo-1294959: Add ``--with-platlibdir`` option to the configure script:
   name of the platform-specific library directory, stored in the new
   :attr:`sys.platlibdir` attribute. It is used to build the path of
-  platform-specific dynamic libraries and the path of the standard library.
+  platform-specific extension modules and the path of the standard library.
   It is equal to ``"lib"`` on most platforms. On Fedora and SuSE, it is
   equal to ``"lib64"`` on 64-bit platforms. Patch by Jan Matějek, Matěj
   Cepl, Charalampos Stratakis and Victor Stinner.

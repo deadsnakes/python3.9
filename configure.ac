@@ -4770,7 +4770,11 @@ else
 fi
 
 
-# Check for --with-libdir-name
+AC_SUBST(BINLIBDEST)
+BINLIBDEST='$(LIBDIR)/python$(VERSION)'
+
+
+# Check for --with-platlibdir
 # /usr/$LIDIRNAME/python$VERSION
 AC_SUBST(PLATLIBDIR)
 PLATLIBDIR="lib"
@@ -4787,6 +4791,7 @@ if test -n "$withval" -a "$withval" != yes -a "$withval" != no
 then
   AC_MSG_RESULT(yes)
   PLATLIBDIR="$withval"
+  BINLIBDEST='${exec_prefix}/${PLATLIBDIR}/python$(VERSION)'
 else
   AC_MSG_RESULT(no)
 fi],
@@ -5778,24 +5783,6 @@ AC_DEFINE_UNQUOTED(PY_BUILTIN_HASHLIB_HASHES, "$withval")
 AC_MSG_RESULT($default_hashlib_hashes);
 AC_DEFINE_UNQUOTED(PY_BUILTIN_HASHLIB_HASHES, "$default_hashlib_hashes")
 ])
-
-# --with-experimental-isolated-subinterpreters
-AH_TEMPLATE(EXPERIMENTAL_ISOLATED_SUBINTERPRETERS,
-            [Better isolate subinterpreters, experimental build mode.])
-AC_MSG_CHECKING(for --with-experimental-isolated-subinterpreters)
-AC_ARG_WITH(experimental-isolated-subinterpreters,
-  AS_HELP_STRING([--with-experimental-isolated-subinterpreters],
-                 [better isolate subinterpreters, experimental build mode (default is no)]),
-[
-if test "$withval" != no
-then
-  AC_MSG_RESULT(yes);
-  AC_DEFINE(EXPERIMENTAL_ISOLATED_SUBINTERPRETERS)
-else
-  AC_MSG_RESULT(no);
-fi],
-[AC_MSG_RESULT(no)])
-
 
 # generate output files
 AC_CONFIG_FILES(Makefile.pre Misc/python.pc Misc/python-embed.pc Misc/python-config.sh)
