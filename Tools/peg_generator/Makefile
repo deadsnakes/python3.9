@@ -46,7 +46,7 @@ regen-metaparser: pegen/metagrammar.gram pegen/*.py
 venv:
 	$(PYTHON) -m venv $(VENVDIR)
 	$(VENVPYTHON) -m pip install -U pip setuptools
-	$(VENVPYTHON) -m pip install -U memory_profiler
+	$(VENVPYTHON) -m pip install -r requirements.pip
 	@echo "The venv has been created in the $(VENVDIR) directory"
 
 test: run
@@ -69,41 +69,32 @@ stats: peg_extension/parse.c data/xxl.py
 
 time: time_compile
 
-time_compile: venv peg_extension/parse.c data/xxl.py
-	$(VENVPYTHON) scripts/benchmark.py --parser=pegen --target=xxl compile
+time_compile: venv data/xxl.py
+	$(VENVPYTHON) scripts/benchmark.py --parser=new --target=xxl compile
 
-time_parse: venv peg_extension/parse.c data/xxl.py
-	$(VENVPYTHON) scripts/benchmark.py --parser=pegen --target=xxl parse
+time_parse: venv data/xxl.py
+	$(VENVPYTHON) scripts/benchmark.py --parser=new --target=xxl parse
 
-time_check: venv peg_extension/parse.c data/xxl.py
-	$(VENVPYTHON) scripts/benchmark.py --parser=pegen --target=xxl check
+time_old: time_old_compile
 
-time_stdlib: time_stdlib_compile
+time_old_compile: venv data/xxl.py
+	$(VENVPYTHON) scripts/benchmark.py --parser=old --target=xxl compile
 
-time_stdlib_compile: venv peg_extension/parse.c data/xxl.py
-	$(VENVPYTHON) scripts/benchmark.py --parser=cpython --target=xxl compile
+time_old_parse: venv data/xxl.py
+	$(VENVPYTHON) scripts/benchmark.py --parser=old --target=xxl parse
 
-time_stdlib_parse: venv peg_extension/parse.c data/xxl.py
-	$(VENVPYTHON) scripts/benchmark.py --parser=cpython --target=xxl parse
-
-test_local:
-	$(PYTHON) scripts/test_parse_directory.py \
-		--grammar-file $(GRAMMAR) \
-		--tokens-file $(TOKENS) \
+time_peg_dir: venv
+	$(VENVPYTHON) scripts/test_parse_directory.py \
 		-d $(TESTDIR) \
 		$(TESTFLAGS) \
 		--exclude "*/failset/*" \
 		--exclude "*/failset/**" \
 		--exclude "*/failset/**/*"
 
-test_global: $(CPYTHON)
-	$(PYTHON) scripts/test_parse_directory.py \
-		--grammar-file $(GRAMMAR) \
-		--tokens-file $(TOKENS) \
+time_stdlib: $(CPYTHON) venv
+	$(VENVPYTHON) scripts/test_parse_directory.py \
 		-d $(CPYTHON) \
 		$(TESTFLAGS) \
-		--exclude "*/test2to3/*" \
-		--exclude "*/test2to3/**/*" \
 		--exclude "*/bad*" \
 		--exclude "*/lib2to3/tests/data/*"
 
@@ -112,9 +103,6 @@ mypy: regen-metaparser
 
 format-python:
 	black pegen scripts
-
-bench: venv
-	$(VENVPYTHON) scripts/benchmark.py --parser=pegen --target=stdlib check
 
 format: format-python
 

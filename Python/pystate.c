@@ -39,16 +39,6 @@ extern "C" {
     _Py_atomic_store_relaxed(&(gilstate)->tstate_current, \
                              (uintptr_t)(value))
 
-static void
-ensure_tstate_not_null(const char *func, PyThreadState *tstate)
-{
-    if (tstate == NULL) {
-        _Py_FatalErrorFunc(func,
-                           "current thread state is NULL (released GIL?)");
-    }
-}
-
-
 /* Forward declarations */
 static PyThreadState *_PyGILState_GetThisThreadState(struct _gilstate_runtime_state *gilstate);
 static void _PyThreadState_Delete(PyThreadState *tstate, int check_current);
@@ -431,7 +421,7 @@ PyInterpreterState *
 PyInterpreterState_Get(void)
 {
     PyThreadState *tstate = _PyThreadState_GET();
-    ensure_tstate_not_null(__func__, tstate);
+    _Py_EnsureTstateNotNULL(tstate);
     PyInterpreterState *interp = tstate->interp;
     if (interp == NULL) {
         Py_FatalError("no current interpreter");
@@ -846,7 +836,7 @@ static void
 tstate_delete_common(PyThreadState *tstate,
                      struct _gilstate_runtime_state *gilstate)
 {
-    ensure_tstate_not_null(__func__, tstate);
+    _Py_EnsureTstateNotNULL(tstate);
     PyInterpreterState *interp = tstate->interp;
     if (interp == NULL) {
         Py_FatalError("NULL interpreter");
@@ -897,7 +887,7 @@ PyThreadState_Delete(PyThreadState *tstate)
 void
 _PyThreadState_DeleteCurrent(PyThreadState *tstate)
 {
-    ensure_tstate_not_null(__func__, tstate);
+    _Py_EnsureTstateNotNULL(tstate);
     struct _gilstate_runtime_state *gilstate = &tstate->interp->runtime->gilstate;
     tstate_delete_common(tstate, gilstate);
     _PyRuntimeGILState_SetThreadState(gilstate, NULL);
@@ -956,14 +946,6 @@ _PyThreadState_DeleteExcept(_PyRuntimeState *runtime, PyThreadState *tstate)
 }
 
 
-#ifdef EXPERIMENTAL_ISOLATED_SUBINTERPRETERS
-PyThreadState*
-_PyThreadState_GetTSS(void) {
-    return PyThread_tss_get(&_PyRuntime.gilstate.autoTSSkey);
-}
-#endif
-
-
 PyThreadState *
 _PyThreadState_UncheckedGet(void)
 {
@@ -975,7 +957,7 @@ PyThreadState *
 PyThreadState_Get(void)
 {
     PyThreadState *tstate = _PyThreadState_GET();
-    ensure_tstate_not_null(__func__, tstate);
+    _Py_EnsureTstateNotNULL(tstate);
     return tstate;
 }
 
@@ -983,11 +965,7 @@ PyThreadState_Get(void)
 PyThreadState *
 _PyThreadState_Swap(struct _gilstate_runtime_state *gilstate, PyThreadState *newts)
 {
-#ifdef EXPERIMENTAL_ISOLATED_SUBINTERPRETERS
-    PyThreadState *oldts = _PyThreadState_GetTSS();
-#else
     PyThreadState *oldts = _PyRuntimeGILState_GetThreadState(gilstate);
-#endif
 
     _PyRuntimeGILState_SetThreadState(gilstate, newts);
     /* It should not be possible for more than one thread state
@@ -1005,9 +983,6 @@ _PyThreadState_Swap(struct _gilstate_runtime_state *gilstate, PyThreadState *new
             Py_FatalError("Invalid thread state for this thread");
         errno = err;
     }
-#endif
-#ifdef EXPERIMENTAL_ISOLATED_SUBINTERPRETERS
-    PyThread_tss_set(&gilstate->autoTSSkey, newts);
 #endif
     return oldts;
 }
@@ -1378,9 +1353,7 @@ PyGILState_Ensure(void)
 
     /* Ensure that _PyEval_InitThreads() and _PyGILState_Init() have been
        called by Py_Initialize() */
-#ifndef EXPERIMENTAL_ISOLATED_SUBINTERPRETERS
     assert(_PyEval_ThreadsInitialized(runtime));
-#endif
     assert(gilstate->autoInterpreterState);
 
     PyThreadState *tcur = (PyThreadState *)PyThread_tss_get(&gilstate->autoTSSkey);
