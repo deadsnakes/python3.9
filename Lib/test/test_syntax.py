@@ -136,6 +136,18 @@ SyntaxError: cannot assign to operator
 Traceback (most recent call last):
 SyntaxError: cannot assign to conditional expression
 
+>>> True = True = 3
+Traceback (most recent call last):
+SyntaxError: cannot assign to True
+
+>>> x = y = True = z = 3
+Traceback (most recent call last):
+SyntaxError: cannot assign to True
+
+>>> x = y = yield = 1
+Traceback (most recent call last):
+SyntaxError: assignment to yield expression not possible
+
 >>> a, b += 1, 2
 Traceback (most recent call last):
 SyntaxError: 'tuple' is an illegal expression for augmented assignment
@@ -148,13 +160,16 @@ SyntaxError: 'tuple' is an illegal expression for augmented assignment
 Traceback (most recent call last):
 SyntaxError: 'list' is an illegal expression for augmented assignment
 
+>>> p = p =
+Traceback (most recent call last):
+SyntaxError: invalid syntax
+
 From compiler_complex_args():
 
 >>> def f(None=1):
 ...     pass
 Traceback (most recent call last):
 SyntaxError: invalid syntax
-
 
 From ast_for_arguments():
 
@@ -216,11 +231,9 @@ SyntaxError: Generator expression must be parenthesized
 >>> f(x for x in L, **{})
 Traceback (most recent call last):
 SyntaxError: Generator expression must be parenthesized
-
-# >>> f(L, x for x in L)
-# Traceback (most recent call last):
-# SyntaxError: Generator expression must be parenthesized
-
+>>> f(L, x for x in L)
+Traceback (most recent call last):
+SyntaxError: Generator expression must be parenthesized
 >>> f(x for x in L, y for y in L)
 Traceback (most recent call last):
 SyntaxError: Generator expression must be parenthesized
@@ -640,6 +653,14 @@ SyntaxError: cannot assign to f-string expression
 >>> f'{x}-{y}' = 42
 Traceback (most recent call last):
 SyntaxError: cannot assign to f-string expression
+
+>>> from t import x,
+Traceback (most recent call last):
+SyntaxError: trailing comma not allowed without surrounding parentheses
+
+>>> from t import x,y,
+Traceback (most recent call last):
+SyntaxError: trailing comma not allowed without surrounding parentheses
 
 Corner-cases that used to fail to raise the correct error:
 
