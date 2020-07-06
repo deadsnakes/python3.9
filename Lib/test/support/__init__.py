@@ -582,25 +582,25 @@ def _requires_unix_version(sysname, min_version):
     For example, @_requires_unix_version('FreeBSD', (7, 2)) raises SkipTest if
     the FreeBSD version is less than 7.2.
     """
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kw):
-            if platform.system() == sysname:
-                version_txt = platform.release().split('-', 1)[0]
-                try:
-                    version = tuple(map(int, version_txt.split('.')))
-                except ValueError:
-                    pass
-                else:
-                    if version < min_version:
-                        min_version_txt = '.'.join(map(str, min_version))
-                        raise unittest.SkipTest(
-                            "%s version %s or higher required, not %s"
-                            % (sysname, min_version_txt, version_txt))
-            return func(*args, **kw)
-        wrapper.min_version = min_version
-        return wrapper
-    return decorator
+    import platform
+    min_version_txt = '.'.join(map(str, min_version))
+    version_txt = platform.release().split('-', 1)[0]
+    if platform.system() == sysname:
+        try:
+            version = tuple(map(int, version_txt.split('.')))
+        except ValueError:
+            skip = False
+        else:
+            skip = version < min_version
+    else:
+        skip = False
+
+    return unittest.skipIf(
+        skip,
+        f"{sysname} version {min_version_txt} or higher required, not "
+        f"{version_txt}"
+    )
+
 
 def requires_freebsd_version(*min_version):
     """Decorator raising SkipTest if the OS is FreeBSD and the FreeBSD version is
@@ -720,21 +720,21 @@ else:
 # Filename used for testing
 if os.name == 'java':
     # Jython disallows @ in module names
-    TESTFN = '$test'
+    TESTFN_ASCII = '$test'
 else:
-    TESTFN = '@test'
+    TESTFN_ASCII = '@test'
 
 # Disambiguate TESTFN for parallel testing, while letting it remain a valid
 # module name.
-TESTFN = "{}_{}_tmp".format(TESTFN, os.getpid())
+TESTFN_ASCII = "{}_{}_tmp".format(TESTFN_ASCII, os.getpid())
 
 # Define the URL of a dedicated HTTP server for the network tests.
 # The URL must use clear-text HTTP: no redirection to encrypted HTTPS.
 TEST_HTTP_URL = "http://www.pythontest.net"
 
 # FS_NONASCII: non-ASCII character encodable by os.fsencode(),
-# or None if there is no such character.
-FS_NONASCII = None
+# or an empty string if there is no such character.
+FS_NONASCII = ''
 for character in (
     # First try printable and common characters to have a readable filename.
     # For each character, the encoding list are just example of encodings able
@@ -781,7 +781,7 @@ for character in (
         break
 
 # TESTFN_UNICODE is a non-ascii filename
-TESTFN_UNICODE = TESTFN + "-\xe0\xf2\u0258\u0141\u011f"
+TESTFN_UNICODE = TESTFN_ASCII + "-\xe0\xf2\u0258\u0141\u011f"
 if sys.platform == 'darwin':
     # In Mac OS X's VFS API file names are, by definition, canonically
     # decomposed Unicode, encoded using UTF-8. See QA1173:
@@ -799,7 +799,7 @@ if os.name == 'nt':
     if sys.getwindowsversion().platform >= 2:
         # Different kinds of characters from various languages to minimize the
         # probability that the whole name is encodable to MBCS (issue #9819)
-        TESTFN_UNENCODABLE = TESTFN + "-\u5171\u0141\u2661\u0363\uDC80"
+        TESTFN_UNENCODABLE = TESTFN_ASCII + "-\u5171\u0141\u2661\u0363\uDC80"
         try:
             TESTFN_UNENCODABLE.encode(TESTFN_ENCODING)
         except UnicodeEncodeError:
@@ -816,7 +816,7 @@ elif sys.platform != 'darwin':
         b'\xff'.decode(TESTFN_ENCODING)
     except UnicodeDecodeError:
         # 0xff will be encoded using the surrogate character u+DCFF
-        TESTFN_UNENCODABLE = TESTFN \
+        TESTFN_UNENCODABLE = TESTFN_ASCII \
             + b'-\xff'.decode(TESTFN_ENCODING, 'surrogateescape')
     else:
         # File system encoding (eg. ISO-8859-* encodings) can encode
@@ -850,13 +850,14 @@ for name in (
     try:
         name.decode(TESTFN_ENCODING)
     except UnicodeDecodeError:
-        TESTFN_UNDECODABLE = os.fsencode(TESTFN) + name
+        TESTFN_UNDECODABLE = os.fsencode(TESTFN_ASCII) + name
         break
 
 if FS_NONASCII:
-    TESTFN_NONASCII = TESTFN + '-' + FS_NONASCII
+    TESTFN_NONASCII = TESTFN_ASCII + FS_NONASCII
 else:
     TESTFN_NONASCII = None
+TESTFN = TESTFN_NONASCII or TESTFN_ASCII
 
 # Save the initial cwd
 SAVEDCWD = os.getcwd()
@@ -2352,7 +2353,7 @@ class PythonSymlink:
                 dll,
                 os.path.join(dest_dir, os.path.basename(dll))
             ))
-            for runtime in glob.glob(os.path.join(src_dir, "vcruntime*.dll")):
+            for runtime in glob.glob(os.path.join(glob.escape(src_dir), "vcruntime*.dll")):
                 self._also_link.append((
                     runtime,
                     os.path.join(dest_dir, os.path.basename(runtime))
@@ -2532,6 +2533,27 @@ def check__all__(test_case, module, name_of_module=None, extra=(),
     test_case.assertCountEqual(module.__all__, expected)
 
 
+def suppress_msvcrt_asserts(verbose=False):
+    try:
+        import msvcrt
+    except ImportError:
+        return
+
+    msvcrt.SetErrorMode(msvcrt.SEM_FAILCRITICALERRORS
+                        | msvcrt.SEM_NOALIGNMENTFAULTEXCEPT
+                        | msvcrt.SEM_NOGPFAULTERRORBOX
+                        | msvcrt.SEM_NOOPENFILEERRORBOX)
+
+    # CrtSetReportMode() is only available in debug build
+    if hasattr(msvcrt, 'CrtSetReportMode'):
+        for m in [msvcrt.CRT_WARN, msvcrt.CRT_ERROR, msvcrt.CRT_ASSERT]:
+            if verbose:
+                msvcrt.CrtSetReportMode(m, msvcrt.CRTDBG_MODE_FILE)
+                msvcrt.CrtSetReportFile(m, msvcrt.CRTDBG_FILE_STDERR)
+            else:
+                msvcrt.CrtSetReportMode(m, 0)
+
+
 class SuppressCrashReport:
     """Try to prevent a crash report from popping up.
 
@@ -2543,7 +2565,7 @@ class SuppressCrashReport:
 
     def __enter__(self):
         """On Windows, disable Windows Error Reporting dialogs using
-        SetErrorMode.
+        SetErrorMode() and CrtSetReportMode().
 
         On UNIX, try to save the previous core file size limit, then set
         soft limit to 0.
@@ -2552,21 +2574,18 @@ class SuppressCrashReport:
             # see http://msdn.microsoft.com/en-us/library/windows/desktop/ms680621.aspx
             # GetErrorMode is not available on Windows XP and Windows Server 2003,
             # but SetErrorMode returns the previous value, so we can use that
-            import ctypes
-            self._k32 = ctypes.windll.kernel32
-            SEM_NOGPFAULTERRORBOX = 0x02
-            self.old_value = self._k32.SetErrorMode(SEM_NOGPFAULTERRORBOX)
-            self._k32.SetErrorMode(self.old_value | SEM_NOGPFAULTERRORBOX)
-
-            # Suppress assert dialogs in debug builds
-            # (see http://bugs.python.org/issue23314)
             try:
                 import msvcrt
-                msvcrt.CrtSetReportMode
-            except (AttributeError, ImportError):
-                # no msvcrt or a release build
-                pass
-            else:
+            except ImportError:
+                return
+
+            self.old_value = msvcrt.SetErrorMode(msvcrt.SEM_NOGPFAULTERRORBOX)
+
+            msvcrt.SetErrorMode(self.old_value | msvcrt.SEM_NOGPFAULTERRORBOX)
+
+            # bpo-23314: Suppress assert dialogs in debug builds.
+            # CrtSetReportMode() is only available in debug build.
+            if hasattr(msvcrt, 'CrtSetReportMode'):
                 self.old_modes = {}
                 for report_type in [msvcrt.CRT_WARN,
                                     msvcrt.CRT_ERROR,
@@ -2617,10 +2636,10 @@ class SuppressCrashReport:
             return
 
         if sys.platform.startswith('win'):
-            self._k32.SetErrorMode(self.old_value)
+            import msvcrt
+            msvcrt.SetErrorMode(self.old_value)
 
             if self.old_modes:
-                import msvcrt
                 for report_type, (old_mode, old_file) in self.old_modes.items():
                     msvcrt.CrtSetReportMode(report_type, old_mode)
                     msvcrt.CrtSetReportFile(report_type, old_file)
@@ -3097,7 +3116,6 @@ def wait_process(pid, *, exitcode, timeout=None):
         if timeout is None:
             timeout = SHORT_TIMEOUT
         t0 = time.monotonic()
-        deadline = t0 + timeout
         sleep = 0.001
         max_sleep = 0.1
         while True:
@@ -3142,3 +3160,36 @@ def use_old_parser():
 
 def skip_if_new_parser(msg):
     return unittest.skipIf(not use_old_parser(), msg)
+
+
+@contextlib.contextmanager
+def save_restore_warnings_filters():
+    old_filters = warnings.filters[:]
+    try:
+        yield
+    finally:
+        warnings.filters[:] = old_filters
+
+
+def skip_if_broken_multiprocessing_synchronize():
+    """
+    Skip tests if the multiprocessing.synchronize module is missing, if there
+    is no available semaphore implementation, or if creating a lock raises an
+    OSError (on Linux only).
+    """
+
+    # Skip tests if the _multiprocessing extension is missing.
+    import_module('_multiprocessing')
+
+    # Skip tests if there is no available semaphore implementation:
+    # multiprocessing.synchronize requires _multiprocessing.SemLock.
+    synchronize = import_module('multiprocessing.synchronize')
+
+    if sys.platform == "linux":
+        try:
+            # bpo-38377: On Linux, creating a semaphore fails with OSError
+            # if the current user does not have the permission to create
+            # a file in /dev/shm/ directory.
+            synchronize.Lock(ctx=None)
+        except OSError as exc:
+            raise unittest.SkipTest(f"broken multiprocessing SemLock: {exc!r}")

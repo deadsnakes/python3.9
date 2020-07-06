@@ -153,6 +153,13 @@ TEST_CASES = [
     ('dict_comp', '{x:1 for x in a}'),
     ('dict_comp_if', '{x:1+2 for x in a if b}'),
     ('dict_empty', '{}'),
+    ('empty_line_after_linecont',
+     r'''
+        pass
+        \
+
+        pass
+     '''),
     ('for',
      '''
         for i in a:
@@ -662,7 +669,7 @@ FSTRINGS_TRACEBACKS = {
             {a$b}
             '''
         """,
-        '(a$b)',
+        '(a$b)\n',
     ),
     'multiline_fstring_brace_on_next_line': (
         """
@@ -670,7 +677,7 @@ FSTRINGS_TRACEBACKS = {
             {a$b
             }'''
         """,
-        '(a$b',
+        '(a$b\n',
     ),
     'multiline_fstring_brace_on_previous_line': (
         """
@@ -678,7 +685,7 @@ FSTRINGS_TRACEBACKS = {
             {
             a$b}'''
         """,
-        'a$b)',
+        'a$b)\n',
     ),
 }
 
