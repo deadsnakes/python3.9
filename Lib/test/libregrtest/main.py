@@ -596,13 +596,14 @@ class Regrtest:
             test_cwd = 'test_python_worker_{}'.format(pid)
         else:
             test_cwd = 'test_python_{}'.format(pid)
+        test_cwd += support.FS_NONASCII
         test_cwd = os.path.join(self.tmp_dir, test_cwd)
         return test_cwd
 
     def cleanup(self):
         import glob
 
-        path = os.path.join(self.tmp_dir, 'test_python_*')
+        path = os.path.join(glob.escape(self.tmp_dir), 'test_python_*')
         print("Cleanup %s directory" % self.tmp_dir)
         for name in glob.glob(path):
             if os.path.isdir(name):
