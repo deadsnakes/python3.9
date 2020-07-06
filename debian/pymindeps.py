@@ -124,6 +124,7 @@ excluded_imports = {
     'pathlib': set(('urllib',)), # Windows only
     'pickle': set(('argparse', 'doctest', 'pprint')),
     'platform': set(('ctypes', 'plistlib', 'tempfile')),
+    'random': {'statistics'},
     'reprlib': set(('_dummy_thread',)),
     'shutil': set(('bz2','lzma', 'tarfile', 'zipfile')),
     #'socket': set(('_ssl',)),
