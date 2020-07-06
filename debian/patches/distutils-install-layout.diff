@@ -217,7 +217,7 @@ index 51c80e0..2ada481 100644
  
      def test_debug_mode(self):
 diff --git a/Lib/pydoc.py b/Lib/pydoc.py
-index e595c39..6d9fc26 100755
+index 4422ea8..0a20759 100755
 --- a/Lib/pydoc.py
 +++ b/Lib/pydoc.py
 @@ -505,6 +505,7 @@ class Doc:
@@ -229,7 +229,7 @@ index e595c39..6d9fc26 100755
              object.__name__ not in ('xml.etree', 'test.pydoc_mod')):
              if docloc.startswith(("http://", "https://")):
 diff --git a/Lib/site.py b/Lib/site.py
-index e981a14..4929a18 100644
+index 9e617af..4b3d4c0 100644
 --- a/Lib/site.py
 +++ b/Lib/site.py
 @@ -7,12 +7,18 @@
@@ -278,7 +278,7 @@ index e981a14..4929a18 100644
              sitepackages.append(prefix)
  
 diff --git a/Lib/test/test_site.py b/Lib/test/test_site.py
-index 957e7a4..bda211c 100644
+index beafe0d..a7087bf 100644
 --- a/Lib/test/test_site.py
 +++ b/Lib/test/test_site.py
 @@ -269,16 +269,16 @@ class HelperFunctionsTests(unittest.TestCase):
