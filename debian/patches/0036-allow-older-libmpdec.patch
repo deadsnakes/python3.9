@@ -7,7 +7,7 @@ Subject: allow-older-libmpdec
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Modules/_decimal/_decimal.c b/Modules/_decimal/_decimal.c
-index ff7c647..20ba8fb 100644
+index fb4e020..7061729 100644
 --- a/Modules/_decimal/_decimal.c
 +++ b/Modules/_decimal/_decimal.c
 @@ -36,8 +36,8 @@
