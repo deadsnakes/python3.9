@@ -1,3 +1,9 @@
+python3.9 (3.9.0~rc1-1+xenial1) xenial; urgency=medium
+
+  * Python 3.9.0 release candidate 1.
+
+ -- Anthony Sottile <asottile@umich.edu>  Tue, 11 Aug 2020 16:12:07 -0700
+
 python3.9 (3.9.0~b5-1+xenial1) xenial; urgency=medium
 
   * Python 3.9.0 beta 5 release.
