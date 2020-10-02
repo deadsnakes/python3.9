@@ -2,6 +2,148 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.0 release candidate 2?
+===============================================
+
+*Release date: 2020-09-16*
+
+Core and Builtins
+-----------------
+
+- bpo-41780: Fix :meth:`__dir__` of :class:`types.GenericAlias`. Patch by
+  Batuhan Taskaya.
+
+- bpo-41690: Fix a possible stack overflow in the parser when parsing
+  functions and classes with a huge ammount of arguments. Patch by Pablo
+  Galindo.
+
+- bpo-41681: Fixes the wrong error description in the error raised by using
+  2 `,` in format string in f-string and :meth:`str.format`.
+
+- bpo-41654: Fix a crash that occurred when destroying subclasses of
+  :class:`MemoryError`. Patch by Pablo Galindo.
+
+- bpo-41631: The ``_ast`` module uses again a global state. Using a module
+  state per module instance is causing subtle practical problems. For
+  example, the Mercurial project replaces the ``__import__()`` function to
+  implement lazy import, whereas Python expected that ``import _ast`` always
+  return a fully initialized ``_ast`` module.
+
+- bpo-41533: Free the stack allocated in ``va_build_stack`` if
+  ``do_mkstack`` fails and the stack is not a ``small_stack``.
+
+- bpo-41531: Fix a bug that was dropping keys when compiling dict literals
+  with more than 0xFFFF elements. Patch by Pablo Galindo.
+
+- bpo-41525: The output of ``python --help`` contains now only ASCII
+  characters.
+
+- bpo-29590: Make the stack trace correct after calling
+  :meth:`generator.throw` on a generator that has yielded from a ``yield
+  from``.
+
+Library
+-------
+
+- bpo-41517: fix bug allowing Enums to be extended via multiple inheritance
+
+- bpo-39587: use the correct mix-in data type when constructing Enums
+
+- bpo-41789: Honor `object` overrides in `Enum` class creation
+  (specifically, `__str__`, `__repr__`, `__format__`, and `__reduce_ex__`).
+
+- bpo-39651: Fix a race condition in the ``call_soon_threadsafe()`` method
+  of ``asyncio.ProactorEventLoop``: do nothing if the self-pipe socket has
+  been closed.
+
+- bpo-41720: Fixed :meth:`turtle.Vec2D.__rmul__` for arguments which are not
+  int or float.
+
+- bpo-41696: Fix handling of debug mode in :func:`asyncio.run`. This allows
+  setting ``PYTHONASYNCIODEBUG`` or ``-X dev`` to enable asyncio debug mode
+  when using :func:`asyncio.run`.
+
+- bpo-41687: Fix implementation of sendfile to be compatible with Solaris.
+
+- bpo-39010: Restarting a ``ProactorEventLoop`` on Windows no longer logs
+  spurious ``ConnectionResetErrors``.
+
+- bpo-41609: The pdb whatis command correctly reports instance methods as
+  'Method' rather than 'Function'.
+
+- bpo-32751: When cancelling the task due to a timeout,
+  :meth:`asyncio.wait_for` will now wait until the cancellation is complete
+  also in the case when *timeout* is <= 0, like it does with positive
+  timeouts.
+
+- bpo-37658: :meth:`asyncio.wait_for` now properly handles races between
+  cancellation of itself and the completion of the wrapped awaitable.
+
+- bpo-40782: Change the method asyncio.AbstractEventLoop.run_in_executor to
+  not be a coroutine.
+
+- bpo-41520: Fix :mod:`codeop` regression that prevented turning compile
+  warnings into errors.
+
+- bpo-41503: Fixed a race between setTarget and flush in
+  logging.handlers.MemoryHandler.
+
+- bpo-41344: Prevent creating :class:`shared_memory.SharedMemory` objects
+  with :code:`size=0`.
+
+- bpo-41025: Fixed an issue preventing the C implementation of
+  :class:`zoneinfo.ZoneInfo` from being subclassed.
+
+- bpo-31122: ssl.wrap_socket() now raises ssl.SSLEOFError rather than
+  OSError when peer closes connection during TLS negotiation
+
+- bpo-33660: Fix pathlib.PosixPath to resolve a relative path located on the
+  root directory properly.
+
+Documentation
+-------------
+
+- bpo-37149: Change Shipman tkinter doc link from archive.org to TkDocs.
+  (The doc has been removed from the NMT server.)  The new link responds
+  much faster and includes a short explanatory note.
+
+- bpo-41624: Fix the signature of :class:`typing.Coroutine`.
+
+- bpo-40204: Enable Sphinx 3.2 ``c_allow_pre_v3`` option and disable
+  ``c_warn_on_allowed_pre_v3`` option to make the documentation compatible
+  with Sphinx 2 and Sphinx 3.
+
+- bpo-40979: Refactored typing.rst, arranging more than 70 classes,
+  functions, and decorators into new sub-sections.
+
+- bpo-39883: Make code, examples, and recipes in the Python documentation be
+  licensed under the more permissive BSD0 license in addition to the
+  existing Python 2.0 license.
+
+Tests
+-----
+
+- bpo-41731: Make test_cmd_line_script pass with option '-vv'.
+
+Build
+-----
+
+- bpo-41617: Fix ``pycore_byteswap.h`` header file to support old clang
+  versions: ``__builtin_bswap16()`` is not available in LLVM clang 3.0.
+
+Windows
+-------
+
+- bpo-41526: Fixed layout of final page of the installer by removing the
+  special thanks to Mark Hammond (with his permission).
+
+C API
+-----
+
+- bpo-41524: Fix bug in PyOS_mystrnicmp and PyOS_mystricmp that incremented
+  pointers beyond the end of a string.
+
+
 What's New in Python 3.9.0 release candidate 1?
 ===============================================
 
@@ -2730,7 +2872,7 @@ Core and Builtins
 - bpo-35409: Ignore GeneratorExit exceptions when throwing an exception into
   the aclose coroutine of an asynchronous generator.
 
-- bpo-32949: Removed WITH_CLEANUP_START, WITH_CLEANUP_FINISH, BEGIN_FINALLY,
+- bpo-33387: Removed WITH_CLEANUP_START, WITH_CLEANUP_FINISH, BEGIN_FINALLY,
   END_FINALLY, CALL_FINALLY and POP_FINALLY bytecodes. Replaced with RERAISE
   and WITH_EXCEPT_FINISH bytecodes. The compiler now generates different
   code for exceptional and non-exceptional branches for 'with' and
