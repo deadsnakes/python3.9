@@ -2,6 +2,39 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.0 final?
+=================================
+
+*Release date: 2020-10-04*
+
+Library
+-------
+
+- bpo-41815: Fix SQLite3 segfault when backing up closed database. Patch
+  contributed by Peter David McCormick.
+
+- bpo-41662: No longer override exceptions raised in ``__len__()`` of a
+  sequence of parameters in :mod:`sqlite3` with
+  :exc:`~sqlite3.ProgrammingError`.
+
+- bpo-41662: Fixed crash when mutate list of parameters during iteration in
+  :mod:`sqlite3`.
+
+- bpo-39728: fix default `_missing_` so a duplicate `ValueError` is not set
+  as the `__context__` of the original `ValueError`
+
+Tests
+-----
+
+- bpo-41602: Add tests for SIGINT handling in the runpy module.
+
+Build
+-----
+
+- bpo-38249: Update :c:macro:`Py_UNREACHABLE` to use __builtin_unreachable()
+  if only the compiler is able to use it. Patch by Dong-hee Na.
+
+
 What's New in Python 3.9.0 release candidate 2?
 ===============================================
 
@@ -5695,7 +5728,7 @@ Documentation
   between Python versions.
 
 - bpo-36686: Improve documentation of the stdin, stdout, and stderr
-  arguments of of the ``asyncio.subprocess_exec`` function to specify which
+  arguments of the ``asyncio.subprocess_exec`` function to specify which
   values are supported. Also mention that decoding as text is not supported.
 
   Add a few tests to verify that the various values passed to the std*
@@ -9335,8 +9368,8 @@ Tests
 
 - bpo-34391: Fix ftplib test for TLS 1.3 by reading from data socket.
 
-- bpo-11192: Fix `test_socket` on AIX AIX 6.1 and later IPv6 zone id
-  supports only supported by inet_pton6_zone() Switch to runtime-based
+- bpo-11192: Fix `test_socket` on AIX 6.1 and later IPv6 zone id supports
+  only supported by inet_pton6_zone() Switch to runtime-based
   platform.system() to establish current platform  rather than build-time
   based sys.platform()
 
