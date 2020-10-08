@@ -1,3 +1,9 @@
+python3.9 (3.9.0-1+focal3) focal; urgency=medium
+
+  * fix conflict with upstream python3.9-{lib2to3,tk,gdbm,distutils} packages.
+
+ -- Anthony Sottile <asottile@umich.edu>  Thu, 08 Oct 2020 12:43:28 -0700
+
 python3.9 (3.9.0-1+focal2) focal; urgency=medium
 
   * Enable pgo.
