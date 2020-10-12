@@ -1,3 +1,9 @@
+python3.9 (3.9.0-1+focal4) focal; urgency=medium
+
+  * fix distutils.sysconfig data.
+
+ -- Anthony Sottile <asottile@umich.edu>  Sun, 11 Oct 2020 19:44:01 -0700
+
 python3.9 (3.9.0-1+focal3) focal; urgency=medium
 
   * fix conflict with upstream python3.9-{lib2to3,tk,gdbm,distutils} packages.
