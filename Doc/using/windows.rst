@@ -23,8 +23,8 @@ available for application-local distributions.
 
 As specified in :pep:`11`, a Python release only supports a Windows platform
 while Microsoft considers the platform under extended support. This means that
-Python |version| supports Windows Vista and newer. If you require Windows XP
-support then please install Python 3.4.
+Python |version| supports Windows 8.1 and newer. If you require Windows 7
+support, please install Python 3.8.
 
 There are a number of different installers available for Windows, each with
 certain benefits and downsides.
@@ -103,9 +103,9 @@ paths longer than this would not resolve and errors would result.
 
 In the latest versions of Windows, this limitation can be expanded to
 approximately 32,000 characters. Your administrator will need to activate the
-"Enable Win32 long paths" group policy, or set the registry value
-``HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem@LongPathsEnabled``
-to ``1``.
+"Enable Win32 long paths" group policy, or set ``LongPathsEnabled`` to ``1``
+in the registry key
+``HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem``.
 
 This allows the :func:`open` function, the :mod:`os` module and most other
 path functionality to accept and return paths longer than 260 characters.
