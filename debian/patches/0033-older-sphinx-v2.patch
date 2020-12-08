@@ -43,7 +43,7 @@ index 1fa6b18..dd9a877 100644
  # Ignore any .rst files in the venv/ directory.
  exclude_patterns = ['venv/*', 'README.rst']
 diff --git a/Doc/tools/extensions/pyspecific.py b/Doc/tools/extensions/pyspecific.py
-index f08f4ab..66e5d29 100644
+index 2fad9ec..1afd64f 100644
 --- a/Doc/tools/extensions/pyspecific.py
 +++ b/Doc/tools/extensions/pyspecific.py
 @@ -9,6 +9,7 @@
@@ -62,7 +62,7 @@ index f08f4ab..66e5d29 100644
  from sphinx.util.nodes import split_explicit_title
  from sphinx.writers.text import TextWriter, TextTranslator
  from sphinx.writers.latex import LaTeXTranslator
-@@ -435,7 +435,7 @@ class PydocTopicsBuilder(Builder):
+@@ -441,7 +441,7 @@ class PydocTopicsBuilder(Builder):
  
      def write(self, *ignored):
          writer = TextWriter(self)
