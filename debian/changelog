@@ -1,3 +1,9 @@
+python3.9 (3.9.1-1+xenial1) xenial; urgency=medium
+
+  * Python 3.9.1 release.
+
+ -- Anthony Sottile <asottile@umich.edu>  Mon, 07 Dec 2020 19:26:34 -0800
+
 python3.9 (3.9.0-1+xenial2) xenial; urgency=medium
 
   * Enable pgo.
