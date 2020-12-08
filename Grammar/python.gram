@@ -182,7 +182,7 @@ with_stmt[stmt_ty]:
     | ASYNC 'with' a=','.with_item+ ':' tc=[TYPE_COMMENT] b=block {
        CHECK_VERSION(5, "Async with statements are", _Py_AsyncWith(a, b, NEW_TYPE_COMMENT(p, tc), EXTRA)) }
 with_item[withitem_ty]:
-    | e=expression 'as' t=target &(',' | ')' | ':') { _Py_withitem(e, t, p->arena) }
+    | e=expression 'as' t=star_target &(',' | ')' | ':') { _Py_withitem(e, t, p->arena) }
     | invalid_with_item
     | e=expression { _Py_withitem(e, NULL, p->arena) }
 
@@ -301,7 +301,6 @@ block[asdl_seq*] (memo):
     | simple_stmt
     | invalid_block
 
-expressions_list[asdl_seq*]: a=','.star_expression+ [','] { a }
 star_expressions[expr_ty]:
     | a=star_expression b=(',' c=star_expression { c })+ [','] {
         _Py_Tuple(CHECK(_PyPegen_seq_insert_in_front(p, a, b)), Load, EXTRA) }
@@ -413,7 +412,7 @@ compare_op_bitwise_or_pair[CmpopExprPair*]:
     | is_bitwise_or
 eq_bitwise_or[CmpopExprPair*]: '==' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, Eq, a) }
 noteq_bitwise_or[CmpopExprPair*]:
-    | (tok='!=' {_PyPegen_check_barry_as_flufl(p) ? NULL : tok}) a=bitwise_or {_PyPegen_cmpop_expr_pair(p, NotEq, a) }
+    | (tok='!=' { _PyPegen_check_barry_as_flufl(p, tok) ? NULL : tok}) a=bitwise_or {_PyPegen_cmpop_expr_pair(p, NotEq, a) }
 lte_bitwise_or[CmpopExprPair*]: '<=' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, LtE, a) }
 lt_bitwise_or[CmpopExprPair*]: '<' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, Lt, a) }
 gte_bitwise_or[CmpopExprPair*]: '>=' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, GtE, a) }
@@ -460,6 +459,7 @@ await_primary[expr_ty] (memo):
     | AWAIT a=primary { CHECK_VERSION(5, "Await expressions are", _Py_Await(a, EXTRA)) }
     | primary
 primary[expr_ty]:
+    | invalid_primary  # must be before 'primay genexp' because of invalid_genexp
     | a=primary '.' b=NAME { _Py_Attribute(a, b->v.Name.id, Load, EXTRA) }
     | a=primary b=genexp { _Py_Call(a, CHECK(_PyPegen_singleton_seq(p, b)), NULL, EXTRA) }
     | a=primary '(' b=[arguments] ')' {
@@ -502,11 +502,11 @@ group[expr_ty]:
     | '(' a=(yield_expr | named_expression) ')' { a }
     | invalid_group
 genexp[expr_ty]:
-    | '(' a=expression ~ b=for_if_clauses ')' { _Py_GeneratorExp(a, b, EXTRA) }
+    | '(' a=named_expression ~ b=for_if_clauses ')' { _Py_GeneratorExp(a, b, EXTRA) }
     | invalid_comprehension
-set[expr_ty]: '{' a=expressions_list '}' { _Py_Set(a, EXTRA) }
+set[expr_ty]: '{' a=star_named_expressions '}' { _Py_Set(a, EXTRA) }
 setcomp[expr_ty]:
-    | '{' a=expression ~ b=for_if_clauses '}' { _Py_SetComp(a, b, EXTRA) }
+    | '{' a=named_expression ~ b=for_if_clauses '}' { _Py_SetComp(a, b, EXTRA) }
     | invalid_comprehension
 dict[expr_ty]:
     | '{' a=[double_starred_kvpairs] '}' {
@@ -534,7 +534,7 @@ yield_expr[expr_ty]:
 
 arguments[expr_ty] (memo):
     | a=args [','] &')' { a }
-    | incorrect_arguments
+    | invalid_arguments
 args[expr_ty]:
     | a=','.(starred_expression | named_expression !'=')+ b=[',' k=kwargs {k}] { _PyPegen_collect_call_seqs(p, a, b, EXTRA) }
     | a=kwargs { _Py_Call(_PyPegen_dummy_name(p),
@@ -619,7 +619,7 @@ t_atom[expr_ty]:
 
 
 # From here on, there are rules for invalid syntax with specialised error messages
-incorrect_arguments:
+invalid_arguments:
     | args ',' '*' { RAISE_SYNTAX_ERROR("iterable argument unpacking follows keyword argument unpacking") }
     | a=expression for_if_clauses ',' [args | expression for_if_clauses] {
         RAISE_SYNTAX_ERROR_KNOWN_LOCATION(a, "Generator expression must be parenthesized") }
@@ -664,6 +664,8 @@ invalid_del_stmt:
         RAISE_SYNTAX_ERROR_INVALID_TARGET(DEL_TARGETS, a) }
 invalid_block:
     | NEWLINE !INDENT { RAISE_INDENTATION_ERROR("expected an indented block") }
+invalid_primary:
+    | primary a='{' { RAISE_SYNTAX_ERROR_KNOWN_LOCATION(a, "invalid syntax") }
 invalid_comprehension:
     | ('[' | '(' | '{') a=starred_expression for_if_clauses {
         RAISE_SYNTAX_ERROR_KNOWN_LOCATION(a, "iterable unpacking cannot be used in comprehension") }
