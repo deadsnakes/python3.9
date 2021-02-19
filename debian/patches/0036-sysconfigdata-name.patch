@@ -25,10 +25,10 @@ index d15e9b2..35314d3 100644
      ))
      _temp = __import__(name, globals(), locals(), ['build_time_vars'], 0)
 diff --git a/Lib/sysconfig.py b/Lib/sysconfig.py
-index b0f72a1..7085cb9 100644
+index f3dd3c6..bd91dc3 100644
 --- a/Lib/sysconfig.py
 +++ b/Lib/sysconfig.py
-@@ -343,9 +343,8 @@ def get_makefile_filename():
+@@ -353,9 +353,8 @@ def get_makefile_filename():
  
  def _get_sysconfigdata_name():
      return os.environ.get('_PYTHON_SYSCONFIGDATA_NAME',
@@ -65,7 +65,7 @@ index 516186e..7a489aa 100644
  	-rm -r $(DESTDIR)$(DESTSHARED)/__pycache__
  
 diff --git a/configure.ac b/configure.ac
-index 31f4b74..2645490 100644
+index f45595e..d278639 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -75,7 +75,7 @@ if test "$cross_compiling" = yes; then
