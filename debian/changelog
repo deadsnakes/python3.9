@@ -1,3 +1,9 @@
+python3.9 (3.9.2-1+focal2) focal; urgency=medium
+
+  * libpython-stdlib: depends tzdata, recommends ca-certificates
+
+ -- Anthony Sottile <asottile@umich.edu>  Sat, 20 Feb 2021 12:56:08 -0800
+
 python3.9 (3.9.2-1+focal1) focal; urgency=medium
 
   * Python 3.9.2 release.
