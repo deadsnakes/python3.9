@@ -40,10 +40,10 @@ index f3dd3c6..bd91dc3 100644
      ))
  
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 516186e..7a489aa 100644
+index 2e19276..396cd1e 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
-@@ -1527,8 +1527,10 @@ libinstall:	build_all $(srcdir)/Modules/xxmodule.c
+@@ -1528,8 +1528,10 @@ libinstall:	build_all $(srcdir)/Modules/xxmodule.c
  			esac; \
  		done; \
  	done
@@ -56,7 +56,7 @@ index 516186e..7a489aa 100644
  	$(INSTALL_DATA) $(srcdir)/LICENSE $(DESTDIR)$(LIBDEST)/LICENSE.txt
  	if test -d $(DESTDIR)$(LIBDEST)/distutils/tests; then \
  		$(INSTALL_DATA) $(srcdir)/Modules/xxmodule.c \
-@@ -1683,6 +1685,7 @@ sharedinstall: sharedmods
+@@ -1684,6 +1686,7 @@ sharedinstall: sharedmods
  		--install-scripts=$(BINDIR) \
  		--install-platlib=$(DESTSHARED) \
  		--root=$(DESTDIR)/
@@ -65,10 +65,10 @@ index 516186e..7a489aa 100644
  	-rm -r $(DESTDIR)$(DESTSHARED)/__pycache__
  
 diff --git a/configure.ac b/configure.ac
-index f45595e..d278639 100644
+index dee9d75..ffdf5ef 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -75,7 +75,7 @@ if test "$cross_compiling" = yes; then
+@@ -82,7 +82,7 @@ if test "$cross_compiling" = yes; then
  	    AC_MSG_ERROR([python$PACKAGE_VERSION interpreter not found])
  	fi
          AC_MSG_RESULT($interp)
