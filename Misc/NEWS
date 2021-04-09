@@ -2,6 +2,27 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.4 final?
+=================================
+
+*Release date: 2021-04-04*
+
+Core and Builtins
+-----------------
+
+- bpo-43710: Reverted the fix for https://bugs.python.org/issue42500 as it
+  changed the PyThreadState struct size and broke the 3.9.x ABI in the 3.9.3
+  release (visible on 32-bit platforms using binaries compiled using an
+  earlier version of Python 3.9.x headers).
+
+Library
+-------
+
+- bpo-26053: Fixed bug where the :mod:`pdb` interactive run command echoed
+  the args from the shell command line, even if those have been overridden
+  at the pdb prompt.
+
+
 What's New in Python 3.9.3 final?
 =================================
 
