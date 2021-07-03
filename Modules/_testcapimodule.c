@@ -3732,6 +3732,25 @@ test_structseq_newtype_doesnt_leak(PyObject *Py_UNUSED(self),
 }
 
 static PyObject *
+test_structseq_newtype_null_descr_doc(PyObject *Py_UNUSED(self),
+                              PyObject *Py_UNUSED(args))
+{
+    PyStructSequence_Field descr_fields[1] = {
+        (PyStructSequence_Field){NULL, NULL}
+    };
+    // Test specifically for NULL .doc field.
+    PyStructSequence_Desc descr = {"_testcapi.test_descr", NULL, &descr_fields[0], 0};
+
+    PyTypeObject* structseq_type = PyStructSequence_NewType(&descr);
+    assert(structseq_type != NULL);
+    assert(PyType_Check(structseq_type));
+    assert(PyType_FastSubclass(structseq_type, Py_TPFLAGS_TUPLE_SUBCLASS));
+    Py_DECREF(structseq_type);
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
 test_incref_decref_API(PyObject *ob, PyObject *Py_UNUSED(ignored))
 {
     PyObject *obj = PyLong_FromLong(0);
@@ -4669,6 +4688,10 @@ check_pyobject_forbidden_bytes_is_freed(PyObject *self, PyObject *Py_UNUSED(args
 static PyObject*
 check_pyobject_freed_is_freed(PyObject *self, PyObject *Py_UNUSED(args))
 {
+    /* This test would fail if run with the address sanitizer */
+#ifdef _Py_ADDRESS_SANITIZER
+    Py_RETURN_NONE;
+#else
     PyObject *op = _PyObject_CallNoArg((PyObject *)&PyBaseObject_Type);
     if (op == NULL) {
         return NULL;
@@ -4678,6 +4701,7 @@ check_pyobject_freed_is_freed(PyObject *self, PyObject *Py_UNUSED(args))
     Py_SET_REFCNT(op, 1);
     /* object memory is freed! */
     return test_pyobject_is_freed("check_pyobject_freed_is_freed", op);
+#endif
 }
 
 
@@ -5335,6 +5359,8 @@ static PyMethodDef TestMethods[] = {
     {"test_decref_doesnt_leak", test_decref_doesnt_leak,         METH_NOARGS},
     {"test_structseq_newtype_doesnt_leak",
         test_structseq_newtype_doesnt_leak, METH_NOARGS},
+    {"test_structseq_newtype_null_descr_doc",
+        test_structseq_newtype_null_descr_doc, METH_NOARGS},
     {"test_incref_decref_API",  test_incref_decref_API,          METH_NOARGS},
     {"test_long_and_overflow",  test_long_and_overflow,          METH_NOARGS},
     {"test_long_as_double",     test_long_as_double,             METH_NOARGS},
@@ -6236,6 +6262,13 @@ heapctype_init(PyObject *self, PyObject *args, PyObject *kwargs)
     return 0;
 }
 
+static int
+heapgcctype_traverse(HeapCTypeObject *self, visitproc visit, void *arg)
+{
+    Py_VISIT(Py_TYPE(self));
+    return 0;
+}
+
 static void
 heapgcctype_dealloc(HeapCTypeObject *self)
 {
@@ -6249,6 +6282,7 @@ static PyType_Slot HeapGcCType_slots[] = {
     {Py_tp_init, heapctype_init},
     {Py_tp_members, heapctype_members},
     {Py_tp_dealloc, heapgcctype_dealloc},
+    {Py_tp_traverse, heapgcctype_traverse},
     {Py_tp_doc, (char*)heapgctype__doc__},
     {0, 0},
 };
