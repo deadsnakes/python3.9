@@ -278,10 +278,10 @@ index 9e617af..4b3d4c0 100644
              sitepackages.append(prefix)
  
 diff --git a/Lib/test/test_site.py b/Lib/test/test_site.py
-index 5a3bd18..cfe695c 100644
+index 3d25d7e..a86177f 100644
 --- a/Lib/test/test_site.py
 +++ b/Lib/test/test_site.py
-@@ -270,16 +270,16 @@ class HelperFunctionsTests(unittest.TestCase):
+@@ -272,16 +272,16 @@ class HelperFunctionsTests(unittest.TestCase):
          if os.sep == '/':
              # OS X, Linux, FreeBSD, etc
              if sys.platlibdir != "lib":

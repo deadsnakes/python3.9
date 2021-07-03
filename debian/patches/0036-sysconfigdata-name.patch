@@ -40,7 +40,7 @@ index f3dd3c6..bd91dc3 100644
      ))
  
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 1a77070..269be24 100644
+index bf151b4..d6df113 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
 @@ -1548,8 +1548,10 @@ libinstall:	build_all $(srcdir)/Modules/xxmodule.c
@@ -65,7 +65,7 @@ index 1a77070..269be24 100644
  	-rm -r $(DESTDIR)$(DESTSHARED)/__pycache__
  
 diff --git a/configure.ac b/configure.ac
-index 5592cc7..9e1237f 100644
+index 1b2c0e4..e92d997 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -82,7 +82,7 @@ if test "$cross_compiling" = yes; then
