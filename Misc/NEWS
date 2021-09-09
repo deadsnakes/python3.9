@@ -2,6 +2,358 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.7 final?
+=================================
+
+*Release date: 2021-08-30*
+
+Security
+--------
+
+- bpo-42278: Replaced usage of :func:`tempfile.mktemp` with
+  :class:`~tempfile.TemporaryDirectory` to avoid a potential race condition.
+
+- bpo-41180: Add auditing events to the :mod:`marshal` module, and stop
+  raising ``code.__init__`` events for every unmarshalled code object.
+  Directly instantiated code objects will continue to raise an event, and
+  audit event handlers should inspect or collect the raw marshal data. This
+  reduces a significant performance overhead when loading from ``.pyc``
+  files.
+
+- bpo-44394: Update the vendored copy of libexpat to 2.4.1 (from 2.2.8) to
+  get the fix for the CVE-2013-0340 "Billion Laughs" vulnerability. This
+  copy is most used on Windows and macOS.
+
+- bpo-43124: Made the internal ``putcmd`` function in :mod:`smtplib`
+  sanitize input for presence of ``\r`` and ``\n`` characters to avoid
+  (unlikely) command injection.
+
+Core and Builtins
+-----------------
+
+- bpo-45018: Fixed pickling of range iterators that iterated for over 2**32
+  times.
+
+- bpo-44962: Fix a race in WeakKeyDictionary, WeakValueDictionary and
+  WeakSet when two threads attempt to commit the last pending removal. This
+  fixes asyncio.create_task and fixes a data loss in asyncio.run where
+  shutdown_asyncgens is not run
+
+- bpo-44954: Fixed a corner case bug where the result of
+  ``float.fromhex('0x.8p-1074')`` was rounded the wrong way.
+
+- bpo-44947: Refine the syntax error for trailing commas in import
+  statements. Patch by Pablo Galindo.
+
+- bpo-44698: Restore behaviour of complex exponentiation with integer-valued
+  exponent of type :class:`float` or :class:`complex`.
+
+- bpo-44885: Correct the ast locations of f-strings with format specs and
+  repeated expressions. Patch by Pablo Galindo
+
+- bpo-44872: Use new trashcan macros (Py_TRASHCAN_BEGIN/END) in
+  frameobject.c instead of the old ones (Py_TRASHCAN_SAFE_BEGIN/END).
+
+- bpo-33930: Fix segmentation fault with deep recursion when cleaning method
+  objects. Patch by Augusto Goulart and Pablo Galindo.
+
+- bpo-25782: Fix bug where ``PyErr_SetObject`` hangs when the current
+  exception has a cycle in its context chain.
+
+- bpo-44856: Fix reference leaks in the error paths of ``update_bases()``
+  and ``__build_class__``. Patch by Pablo Galindo.
+
+- bpo-44698: Fix undefined behaviour in complex object exponentiation.
+
+- bpo-44562: Remove uses of :c:func:`PyObject_GC_Del` in error path when
+  initializing :class:`types.GenericAlias`.
+
+- bpo-44523: Remove the pass-through for :func:`hash` of
+  :class:`weakref.proxy` objects to prevent unintended consequences when the
+  original referred object dies while the proxy is part of a hashable
+  object. Patch by Pablo Galindo.
+
+- bpo-44472: Fix ltrace functionality when exceptions are raised. Patch by
+  Pablo Galindo
+
+- bpo-44184: Fix a crash at Python exit when a deallocator function removes
+  the last strong reference to a heap type. Patch by Victor Stinner.
+
+- bpo-39091: Fix crash when using passing a non-exception to a generator's
+  ``throw()`` method. Patch by Noah Oxer
+
+Library
+-------
+
+- bpo-41620: :meth:`~unittest.TestCase.run` now always return a
+  :class:`~unittest.TestResult` instance. Previously it returned ``None`` if
+  the test class or method was decorated with a skipping decorator.
+
+- bpo-43913: Fix bugs in cleaning up classes and modules in :mod:`unittest`:
+
+  * Functions registered with :func:`~unittest.addModuleCleanup` were not called unless the user defines ``tearDownModule()`` in their test module.
+  * Functions registered with :meth:`~unittest.TestCase.addClassCleanup` were not called if ``tearDownClass`` is set to ``None``.
+  * Buffering in :class:`~unittest.TestResult` did not work with functions registered with ``addClassCleanup()`` and ``addModuleCleanup()``.
+  * Errors in functions registered with ``addClassCleanup()`` and ``addModuleCleanup()`` were not handled correctly in buffered and debug modes.
+  * Errors in ``setUpModule()`` and functions registered with ``addModuleCleanup()`` were reported in wrong order.
+  * And several lesser bugs.
+
+- bpo-45001: Made email date parsing more robust against malformed input,
+  namely a whitespace-only ``Date:`` header. Patch by Wouter Bolsterlee.
+
+- bpo-44449: Fix a crash in the signal handler of the :mod:`faulthandler`
+  module: no longer modify the reference count of frame objects. Patch by
+  Victor Stinner.
+
+- bpo-44955: Method :meth:`~unittest.TestResult.stopTestRun` is now always
+  called in pair with method :meth:`~unittest.TestResult.startTestRun` for
+  :class:`~unittest.TestResult` objects implicitly created in
+  :meth:`~unittest.TestCase.run`. Previously it was not called for test
+  methods and classes decorated with a skipping decorator.
+
+- bpo-38956: :class:`argparse.BooleanOptionalAction`'s default value is no
+  longer printed twice when used with
+  :class:`argparse.ArgumentDefaultsHelpFormatter`.
+
+- bpo-44581: Upgrade bundled pip to 21.2.3 and setuptools to 57.4.0
+
+- bpo-44849: Fix the :func:`os.set_inheritable` function on FreeBSD 14 for
+  file descriptor opened with the :data:`~os.O_PATH` flag: ignore the
+  :data:`~errno.EBADF` error on ``ioctl()``, fallback on the ``fcntl()``
+  implementation. Patch by Victor Stinner.
+
+- bpo-44605: The @functools.total_ordering() decorator now works with
+  metaclasses.
+
+- bpo-44822: :mod:`sqlite3` user-defined functions and aggregators returning
+  :class:`strings <str>` with embedded NUL characters are no longer
+  truncated. Patch by Erlend E. Aasland.
+
+- bpo-44815: Always show ``loop=`` arg deprecations in
+  :func:`asyncio.gather` and :func:`asyncio.sleep`
+
+- bpo-44806: Non-protocol subclasses of :class:`typing.Protocol` ignore now
+  the ``__init__`` method inherited from protocol base classes.
+
+- bpo-44667: The :func:`tokenize.tokenize` doesn't incorrectly generate a
+  ``NEWLINE`` token if the source doesn't end with a new line character but
+  the last line is a comment, as the function is already generating a ``NL``
+  token. Patch by Pablo Galindo
+
+- bpo-42853: Fix ``http.client.HTTPSConnection`` fails to download >2GiB
+  data.
+
+- bpo-44752: :mod:`rcompleter` does not call :func:`getattr` on
+  :class:`property` objects to avoid the side-effect of  evaluating the
+  corresponding method.
+
+- bpo-44720: ``weakref.proxy`` objects referencing non-iterators now raise
+  ``TypeError`` rather than dereferencing the null ``tp_iternext`` slot and
+  crashing.
+
+- bpo-44704: The implementation of ``collections.abc.Set._hash()`` now
+  matches that of ``frozenset.__hash__()``.
+
+- bpo-44666: Fixed issue in :func:`compileall.compile_file` when
+  ``sys.stdout`` is redirected. Patch by Stefan Hölzl.
+
+- bpo-40897: Give priority to using the current class constructor in
+  :func:`inspect.signature`. Patch by Weipeng Hong.
+
+- bpo-44608: Fix memory leak in :func:`_tkinter._flatten` if it is called
+  with a sequence or set, but not list or tuple.
+
+- bpo-41928: Update :func:`shutil.copyfile` to raise
+  :exc:`FileNotFoundError` instead of confusing :exc:`IsADirectoryError`
+  when a path ending with a :const:`os.path.sep` does not exist;
+  :func:`shutil.copy` and :func:`shutil.copy2` are also affected.
+
+- bpo-44566: handle StopIteration subclass raised from
+  @contextlib.contextmanager generator
+
+- bpo-44558: Make the implementation consistency of
+  :func:`~operator.indexOf` between C and Python versions. Patch by Dong-hee
+  Na.
+
+- bpo-41249: Fixes ``TypedDict`` to work with ``typing.get_type_hints()``
+  and postponed evaluation of annotations across modules.
+
+- bpo-44461: Fix bug with :mod:`pdb`'s handling of import error due to a
+  package which does not have a ``__main__`` module
+
+- bpo-42892: Fixed an exception thrown while parsing a malformed multipart
+  email by :class:`email.message.EmailMessage`.
+
+- bpo-27827: :meth:`pathlib.PureWindowsPath.is_reserved` now identifies a
+  greater range of reserved filenames, including those with trailing spaces
+  or colons.
+
+- bpo-34266: Handle exceptions from parsing the arg of :mod:`pdb`'s
+  run/restart command.
+
+- bpo-27334: The :mod:`sqlite3` context manager now performs a rollback
+  (thus releasing the database lock) if commit failed.  Patch by Luca Citi
+  and Erlend E. Aasland.
+
+- bpo-43853: Improved string handling for :mod:`sqlite3` user-defined
+  functions and aggregates:
+
+  * It is now possible to pass strings with embedded null characters to UDFs
+  * Conversion failures now correctly raise :exc:`MemoryError`
+
+  Patch by Erlend E. Aasland.
+
+- bpo-43048: Handle `RecursionError` in
+  :class:`~traceback.TracebackException`'s constructor, so that long
+  exceptions chains are truncated instead of causing traceback formatting to
+  fail.
+
+- bpo-41402: Fix :meth:`email.message.EmailMessage.set_content` when called
+  with binary data and ``7bit`` content transfer encoding.
+
+- bpo-32695: The *compresslevel* and *preset* keyword arguments of
+  :func:`tarfile.open` are now both documented and tested.
+
+- bpo-34990: Fixed a Y2k38 bug in the compileall module where it would fail
+  to compile files with a modification time after the year 2038.
+
+- bpo-38840: Fix ``test___all__`` on platforms lacking a shared memory
+  implementation.
+
+- bpo-30256: Pass multiprocessing BaseProxy argument ``manager_owned``
+  through AutoProxy.
+
+- bpo-27513: :func:`email.utils.getaddresses` now accepts
+  :class:`email.header.Header` objects along with string values. Patch by
+  Zackery Spytz.
+
+- bpo-33349: lib2to3 now recognizes async generators everywhere.
+
+- bpo-29298: Fix ``TypeError`` when required subparsers without ``dest`` do
+  not receive arguments. Patch by Anthony Sottile.
+
+Documentation
+-------------
+
+- bpo-44903: Removed the othergui.rst file, any references to it, and the
+  list of GUI frameworks in the FAQ. In their place I've added links to the
+  Python Wiki `page on GUI frameworks
+  <https://wiki.python.org/moin/GuiProgramming>`.
+
+- bpo-44756: Reverted automated virtual environment creation on ``make
+  html`` when building documentation. It turned out to be disruptive for
+  downstream distributors.
+
+- bpo-44693: Update the definition of __future__ in the glossary by
+  replacing the confusing word "pseudo-module" with a more accurate
+  description.
+
+- bpo-35183: Add typical examples to os.path.splitext docs
+
+- bpo-30511: Clarify that :func:`shutil.make_archive` is not thread-safe due
+  to reliance on changing the current working directory.
+
+- bpo-44561: Update of three expired hyperlinks in
+  Doc/distributing/index.rst: "Project structure", "Building and packaging
+  the project", and "Uploading the project to the Python Packaging Index".
+
+- bpo-42958: Updated the docstring and docs of :func:`filecmp.cmp` to be
+  more accurate and less confusing especially in respect to *shallow* arg.
+
+- bpo-44558: Match the docstring and python implementation of
+  :func:`~operator.countOf` to the behavior of its c implementation.
+
+- bpo-44544: List all kwargs for :func:`textwrap.wrap`,
+  :func:`textwrap.fill`, and :func:`textwrap.shorten`. Now, there are nav
+  links to attributes of :class:`TextWrap`, which makes navigation much
+  easier while minimizing duplication in the documentation.
+
+- bpo-38062: Clarify that atexit uses equality comparisons internally.
+
+- bpo-43066: Added a warning to :mod:`zipfile` docs: filename arg with a
+  leading slash may cause archive to be un-openable on Windows systems.
+
+- bpo-27752: Documentation of csv.Dialect is more descriptive.
+
+- bpo-44453: Fix documentation for the return type of
+  :func:`sysconfig.get_path`.
+
+- bpo-39498: Add a "Security Considerations" index which links to standard
+  library modules that have explicitly documented security considerations.
+
+- bpo-33479: Remove the unqualified claim that tkinter is threadsafe. It has
+  not been true for several years and likely never was. An explanation of
+  what is true may be added later, after more discussion, and possibly after
+  patching _tkinter.c,
+
+Tests
+-----
+
+- bpo-25130: Add calls of :func:`gc.collect` in tests to support PyPy.
+
+- bpo-45011: Made tests relying on the :mod:`_asyncio` C extension module
+  optional to allow running on alternative Python implementations. Patch by
+  Serhiy Storchaka.
+
+- bpo-44949: Fix auto history tests of test_readline: sometimes, the newline
+  character is not written at the end, so don't expect it in the output.
+
+- bpo-44852: Add ability to wholesale silence DeprecationWarnings while
+  running the regression test suite.
+
+- bpo-40928: Notify users running test_decimal regression tests on macOS of
+  potential harmless "malloc can't allocate region" messages spewed by
+  test_decimal.
+
+- bpo-44734: Fixed floating point precision issue in turtle tests.
+
+- bpo-44708: Regression tests, when run with -w, are now re-running only the
+  affected test methods instead of re-running the entire test file.
+
+- bpo-30256: Add test for nested queues when using ``multiprocessing``
+  shared objects ``AutoProxy[Queue]`` inside ``ListProxy`` and ``DictProxy``
+
+Build
+-----
+
+- bpo-44535: Enable building using a Visual Studio 2022 install on Windows.
+
+- bpo-43298: Improved error message when building without a Windows SDK
+  installed.
+
+Windows
+-------
+
+- bpo-45007: Update to OpenSSL 1.1.1l in Windows build
+
+- bpo-44572: Avoid consuming standard input in the :mod:`platform` module
+
+- bpo-40263: This is a follow-on bug from
+  https://bugs.python.org/issue26903. Once that is applied we run into an
+  off-by-one assertion problem. The assert was not correct.
+
+macOS
+-----
+
+- bpo-45007: Update macOS installer builds to use OpenSSL 1.1.1l.
+
+- bpo-44689: :meth:`ctypes.util.find_library` now works correctly on macOS
+  11 Big Sur even if Python is built on an older version of macOS.
+  Previously, when built on older macOS systems, ``find_library`` was not
+  able to find  macOS system libraries when running on Big Sur due to
+  changes in  how system libraries are stored.
+
+Tools/Demos
+-----------
+
+- bpo-44756: In the Makefile for documentation (:file:`Doc/Makefile`), the
+  ``build`` rule is dependent on the ``venv`` rule. Therefore, ``html``,
+  ``latex``, and other build-dependent rules are also now dependent on
+  ``venv``. The ``venv`` rule only performs an action if ``$(VENVDIR)`` does
+  not exist. :file:`Doc/README.rst` was updated; most users now only need to
+  type ``make html``.
+
+
 What's New in Python 3.9.6 final?
 =================================
 
