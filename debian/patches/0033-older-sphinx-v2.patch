@@ -10,7 +10,7 @@ Subject: older sphinx v2
  4 files changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/Doc/c-api/typeobj.rst b/Doc/c-api/typeobj.rst
-index ddcb8ae..b24fd65 100644
+index 5a1f5f9..5e238fe 100644
 --- a/Doc/c-api/typeobj.rst
 +++ b/Doc/c-api/typeobj.rst
 @@ -34,7 +34,6 @@ Quick Reference
@@ -30,7 +30,7 @@ index ddcb8ae..b24fd65 100644
     +---------------------------------------------------------+-----------------------------------+--------------+
     | Slot                                                    | :ref:`Type <slot-typedefs-table>` | special      |
 diff --git a/Doc/conf.py b/Doc/conf.py
-index 1fa6b18..dd9a877 100644
+index 2b9e64e..e6c8803 100644
 --- a/Doc/conf.py
 +++ b/Doc/conf.py
 @@ -46,7 +46,7 @@ today_fmt = '%B %d, %Y'
