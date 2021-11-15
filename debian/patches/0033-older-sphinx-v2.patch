@@ -10,7 +10,7 @@ Subject: older sphinx v2
  4 files changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/Doc/c-api/typeobj.rst b/Doc/c-api/typeobj.rst
-index 5a1f5f9..5e238fe 100644
+index a800616..2733abe 100644
 --- a/Doc/c-api/typeobj.rst
 +++ b/Doc/c-api/typeobj.rst
 @@ -34,7 +34,6 @@ Quick Reference
@@ -27,8 +27,8 @@ index 5a1f5f9..5e238fe 100644
  .. table::
 -   :widths: 26,17,12
  
-    +---------------------------------------------------------+-----------------------------------+--------------+
-    | Slot                                                    | :ref:`Type <slot-typedefs-table>` | special      |
+    +---------------------------------------------------------+-----------------------------------+---------------+
+    | Slot                                                    | :ref:`Type <slot-typedefs-table>` | special       |
 diff --git a/Doc/conf.py b/Doc/conf.py
 index 2b9e64e..e6c8803 100644
 --- a/Doc/conf.py

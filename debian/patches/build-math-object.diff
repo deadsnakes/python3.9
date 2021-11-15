@@ -7,7 +7,7 @@ Subject: build-math-object
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 341df88..8cd8847 100644
+index 84cd3c4..eb2a137 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
 @@ -22,7 +22,8 @@
@@ -20,7 +20,7 @@ index 341df88..8cd8847 100644
  MODLIBS=           _MODLIBS_
  
  # === Variables set by configure
-@@ -612,8 +613,9 @@ pybuilddir.txt: $(BUILDPYTHON)
+@@ -611,8 +612,9 @@ pybuilddir.txt: $(BUILDPYTHON)
  	fi
  
  # This is shared by the math and cmath modules
