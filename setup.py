@@ -1686,7 +1686,9 @@ class PyBuildExt(build_ext):
                 ('XML_POOR_ENTROPY', '1'),
             ]
             extra_compile_args = []
-            expat_lib = []
+            # bpo-44394: libexpat uses isnan() of math.h and needs linkage
+            # against the libm
+            expat_lib = ['m']
             expat_sources = ['expat/xmlparse.c',
                              'expat/xmlrole.c',
                              'expat/xmltok.c']
@@ -1768,15 +1770,15 @@ class PyBuildExt(build_ext):
 
     def detect_uuid(self):
         # Build the _uuid module if possible
-        uuid_incs = find_file("uuid.h", self.inc_dirs, ["/usr/include/uuid"])
-        if uuid_incs is not None:
-            if self.compiler.find_library_file(self.lib_dirs, 'uuid'):
-                uuid_libs = ['uuid']
+        uuid_h = sysconfig.get_config_var("HAVE_UUID_H")
+        uuid_uuid_h = sysconfig.get_config_var("HAVE_UUID_UUID_H")
+        if uuid_h or uuid_uuid_h:
+            if sysconfig.get_config_var("HAVE_LIBUUID"):
+                uuid_libs = ["uuid"]
             else:
                 uuid_libs = []
             self.add(Extension('_uuid', ['_uuidmodule.c'],
-                               libraries=uuid_libs,
-                               include_dirs=uuid_incs))
+                               libraries=uuid_libs))
         else:
             self.missing.append('_uuid')
 
