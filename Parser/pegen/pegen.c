@@ -347,15 +347,17 @@ tokenizer_error(Parser *p)
             errtype = PyExc_IndentationError;
             msg = "too many levels of indentation";
             break;
-        case E_LINECONT:
-            col_offset = strlen(strtok(p->tok->buf, "\n")) - 1;
+        case E_LINECONT: {
+            col_offset = p->tok->cur - p->tok->buf - 1;
             msg = "unexpected character after line continuation character";
             break;
+        }
         default:
             msg = "unknown parsing error";
     }
 
-    RAISE_ERROR_KNOWN_LOCATION(p, errtype, p->tok->lineno, col_offset, msg);
+    RAISE_ERROR_KNOWN_LOCATION(p, errtype, p->tok->lineno,
+                               col_offset >= 0 ? col_offset : 0, msg);
     return -1;
 }
 
