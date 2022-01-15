@@ -30,7 +30,7 @@ Depends: python3.9-minimal (= ${binary:Version}),
  libpython3.9-stdlib (= ${binary:Version}),
  mime-support,
  ${shlibs:Depends}, ${misc:Depends}
-Suggests: python3.9-venv, python3.9-doc, binutils
+Suggests: python3.9-venv, binutils
 Breaks: ${python39:Breaks}
 Description: Interactive high-level object-oriented language (version 3.9)
  Python is a high-level, interactive, object-oriented language. Its 3.9 version
@@ -167,28 +167,6 @@ Description: IDE for Python (v3.9) using Tkinter
  IDLE is an Integrated Development Environment for Python (v3.9).
  IDLE is written using Tkinter and therefore quite platform-independent.
 
-Package: python3.9-doc
-Section: doc
-Architecture: all
-Multi-Arch: foreign
-Depends: libjs-jquery, libjs-underscore, ${misc:Depends}
-Suggests: python3.9
-Description: Documentation for the high-level object-oriented language Python (v3.9)
- These is the official set of documentation for the interactive high-level
- object-oriented language Python (v3.9). All documents are provided
- in HTML format. The package consists of ten documents:
- .
-   * What's New in Python3.9
-   * Tutorial
-   * Python Library Reference
-   * Macintosh Module Reference
-   * Python Language Reference
-   * Extending and Embedding Python
-   * Python/C API Reference
-   * Installing Python Modules
-   * Documenting Python
-   * Distributing Python Modules
-
 Package: python3.9-dbg
 Section: debug
 Architecture: any
@@ -296,7 +274,7 @@ Depends: python3.9 (= ${binary:Version}),
   python3.9-tk,
   ca-certificates,
   ${shlibs:Depends}, ${misc:Depends}
-Recommends: python3.9-doc, python3.9-examples,
+Recommends: python3.9-examples,
 Suggests: python3.9-dev
 Description: Python Interpreter with complete class library (version 3.9)
  Python, the high-level, interactive object oriented language,
