@@ -9,7 +9,7 @@ Subject: deb-setup
  1 file changed, 5 insertions(+), 8 deletions(-)
 
 diff --git a/setup.py b/setup.py
-index c6023e1..c9a4ff6 100644
+index 0bec170..7fda091 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -440,8 +440,10 @@ class PyBuildExt(build_ext):
@@ -25,7 +25,7 @@ index c6023e1..c9a4ff6 100644
          self.compiler.set_executables(**args)
  
      def build_extensions(self):
-@@ -731,12 +733,7 @@ class PyBuildExt(build_ext):
+@@ -733,12 +735,7 @@ class PyBuildExt(build_ext):
                          add_dir_to_list(dir_list, directory)
  
      def configure_compiler(self):
