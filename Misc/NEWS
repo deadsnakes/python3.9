@@ -2,6 +2,269 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.11 final?
+==================================
+
+*Release date: 2022-03-15*
+
+Core and Builtins
+-----------------
+
+- bpo-46852: Rename the private undocumented ``float.__set_format__()``
+  method to ``float.__setformat__()`` to fix a typo introduced in Python
+  3.7. The method is only used by test_float. Patch by Victor Stinner.
+
+- bpo-46794: Bump up the libexpat version into 2.4.6
+
+- bpo-46762: Fix an assert failure in debug builds when a '<', '>', or '='
+  is the last character in an f-string that's missing a closing right brace.
+
+- bpo-46732: Correct the docstring for the :meth:`__bool__` method. Patch by
+  Jelle Zijlstra.
+
+- bpo-40479: Add a missing call to ``va_end()`` in
+  ``Modules/_hashopenssl.c``.
+
+- bpo-46615: When iterating over sets internally in ``setobject.c``, acquire
+  strong references to the resulting items from the set.  This prevents
+  crashes in corner-cases of various set operations where the set gets
+  mutated.
+
+- bpo-43721: Fix docstrings of :attr:`~property.getter`,
+  :attr:`~property.setter`, and :attr:`~property.deleter` to clarify that
+  they create a new copy of the property.
+
+- bpo-46503: Fix an assert when parsing some invalid \N escape sequences in
+  f-strings.
+
+- bpo-46417: Fix a race condition on setting a type ``__bases__`` attribute:
+  the internal function ``add_subclass()`` now gets the
+  ``PyTypeObject.tp_subclasses`` member after calling
+  :c:func:`PyWeakref_NewRef` which can trigger a garbage collection which
+  can indirectly modify ``PyTypeObject.tp_subclasses``. Patch by Victor
+  Stinner.
+
+- bpo-46383: Fix invalid signature of ``_zoneinfo``'s ``module_free``
+  function to resolve a crash on wasm32-emscripten platform.
+
+Library
+-------
+
+- bpo-43253: Fix a crash when closing transports where the underlying socket
+  handle is already invalid on the Proactor event loop.
+
+- bpo-47004: Apply bugfixes from importlib_metadata 4.11.3, including bugfix
+  for EntryPoint.extras, which was returning match objects and not the
+  extras strings.
+
+- bpo-46985: Upgrade pip wheel bundled with ensurepip (pip 22.0.4)
+
+- bpo-46968: :mod:`faulthandler`: On Linux 5.14 and newer, dynamically
+  determine size of signal handler stack size CPython allocates using
+  ``getauxval(AT_MINSIGSTKSZ)``. This changes allows for Python extension's
+  request to Linux kernel to use AMX_TILE instruction set on Sapphire Rapids
+  Xeon processor to succeed, unblocking use of the ISA in frameworks.
+
+- bpo-46955: Expose :class:`asyncio.base_events.Server` as
+  :class:`asyncio.Server`. Patch by Stefan Zabka.
+
+- bpo-46932: Update bundled libexpat to 2.4.7
+
+- bpo-25707: Fixed a file leak in :func:`xml.etree.ElementTree.iterparse`
+  when the iterator is not exhausted. Patch by Jacob Walls.
+
+- bpo-44886: Inherit asyncio proactor datagram transport from
+  :class:`asyncio.DatagramTransport`.
+
+- bpo-46827: Support UDP sockets in  :meth:`asyncio.loop.sock_connect` for
+  selector-based event loops.  Patch by Thomas Grainger.
+
+- bpo-46811: Make test suite support Expat >=2.4.5
+
+- bpo-46252: Raise :exc:`TypeError` if :class:`ssl.SSLSocket` is passed to
+  transport-based APIs.
+
+- bpo-46784: Fix libexpat symbols collisions with user dynamically loaded or
+  statically linked libexpat in embedded Python.
+
+- bpo-39327: :func:`shutil.rmtree` can now work with VirtualBox shared
+  folders when running from the guest operating-system.
+
+- bpo-46756: Fix a bug in
+  :meth:`urllib.request.HTTPPasswordMgr.find_user_password` and
+  :meth:`urllib.request.HTTPPasswordMgrWithPriorAuth.is_authenticated` which
+  allowed to bypass authorization. For example, access to URI
+  ``example.org/foobar`` was allowed if the user was authorized for URI
+  ``example.org/foo``.
+
+- bpo-45863: When the :mod:`tarfile` module creates a pax format archive, it
+  will put an integer representation of timestamps in the ustar header (if
+  possible) for the benefit of older unarchivers, in addition to the
+  existing full-precision timestamps in the pax extended header.
+
+- bpo-46672: Fix ``NameError`` in :func:`asyncio.gather` when initial type
+  check fails.
+
+- bpo-45948: Fixed a discrepancy in the C implementation of the
+  :mod:`xml.etree.ElementTree` module. Now, instantiating an
+  :class:`xml.etree.ElementTree.XMLParser` with a ``target=None`` keyword
+  provides a default :class:`xml.etree.ElementTree.TreeBuilder` target as
+  the Python implementation does.
+
+- bpo-46591: Make the IDLE doc URL on the About IDLE dialog clickable.
+
+- bpo-46400: expat: Update libexpat from 2.4.1 to 2.4.4
+
+- bpo-46487: Add the ``get_write_buffer_limits`` method to
+  :class:`asyncio.transports.WriteTransport` and to the SSL transport.
+
+- bpo-46539: In :func:`typing.get_type_hints`, support evaluating
+  stringified ``ClassVar`` and ``Final`` annotations inside ``Annotated``.
+  Patch by Gregory Beauregard.
+
+- bpo-46491: Allow :data:`typing.Annotated` to wrap :data:`typing.Final` and
+  :data:`typing.ClassVar`. Patch by Gregory Beauregard.
+
+- bpo-46436: Fix command-line option ``-d``/``--directory`` in module
+  :mod:`http.server` which is ignored when combined with command-line option
+  ``--cgi``. Patch by Géry Ogam.
+
+- bpo-41403: Make :meth:`mock.patch` raise a :exc:`TypeError` with a
+  relevant error message on invalid arg. Previously it allowed a cryptic
+  :exc:`AttributeError` to escape.
+
+- bpo-46474: In ``importlib.metadata.EntryPoint.pattern``, avoid potential
+  REDoS by limiting ambiguity in consecutive whitespace.
+
+- bpo-46469: :mod:`asyncio` generic classes now return
+  :class:`types.GenericAlias` in ``__class_getitem__`` instead of the same
+  class.
+
+- bpo-46434: :mod:`pdb` now gracefully handles ``help`` when :attr:`__doc__`
+  is missing, for example when run with pregenerated optimized ``.pyc``
+  files.
+
+- bpo-46333: The :meth:`__eq__` and :meth:`__hash__` methods of
+  :class:`typing.ForwardRef` now honor the ``module`` parameter of
+  :class:`typing.ForwardRef`. Forward references from different modules are
+  now differentiated.
+
+- bpo-43118: Fix a bug in :func:`inspect.signature` that was causing it to
+  fail on some subclasses of classes with a ``__text_signature__``
+  referencing module globals. Patch by Weipeng Hong.
+
+- bpo-21987: Fix an issue with :meth:`tarfile.TarFile.getmember` getting a
+  directory name with a trailing slash.
+
+- bpo-20392: Fix inconsistency with uppercase file extensions in
+  :meth:`MimeTypes.guess_type`. Patch by Kumar Aditya.
+
+- bpo-46080: Fix exception in argparse help text generation if a
+  :class:`argparse.BooleanOptionalAction` argument's default is
+  ``argparse.SUPPRESS`` and it has ``help`` specified.  Patch by Felix
+  Fontein.
+
+- bpo-44439: Fix ``.write()`` method of a member file in ``ZipFile``, when
+  the input data is an object that supports the buffer protocol, the file
+  length may be wrong.
+
+- bpo-45703: When a namespace package is imported before another module from
+  the same namespace is created/installed in a different :data:`sys.path`
+  location while the program is running, calling the
+  :func:`importlib.invalidate_caches` function will now also guarantee the
+  new module is noticed.
+
+- bpo-24959: Fix bug where :mod:`unittest` sometimes drops frames from
+  tracebacks of exceptions raised in tests.
+
+Documentation
+-------------
+
+- bpo-46463: Fixes :file:`escape4chm.py` script used when building the CHM
+  documentation file
+
+Tests
+-----
+
+- bpo-46913: Fix test_faulthandler.test_sigfpe() if Python is built with
+  undefined behavior sanitizer (UBSAN): disable UBSAN on the
+  faulthandler_sigfpe() function. Patch by Victor Stinner.
+
+- bpo-46708: Prevent default asyncio event loop policy modification warning
+  after ``test_asyncio`` execution.
+
+- bpo-46616: Ensures ``test_importlib.test_windows`` cleans up registry keys
+  after completion.
+
+- bpo-44359: test_ftplib now silently ignores socket errors to prevent
+  logging unhandled threading exceptions. Patch by Victor Stinner.
+
+- bpo-46542: Fix a Python crash in test_lib2to3 when using Python built in
+  debug mode: limit the recursion limit. Patch by Victor Stinner.
+
+- bpo-46576: test_peg_generator now disables compiler optimization when
+  testing compilation of its own C extensions to significantly speed up the
+  testing on non-debug builds of CPython.
+
+- bpo-46542: Fix ``test_json`` tests checking for :exc:`RecursionError`:
+  modify these tests to use ``support.infinite_recursion()``. Patch by
+  Victor Stinner.
+
+- bpo-13886: Skip test_builtin PTY tests on non-ASCII characters if the
+  readline module is loaded. The readline module changes input() behavior,
+  but test_builtin is not intented to test the readline module. Patch by
+  Victor Stinner.
+
+Build
+-----
+
+- bpo-47024: Update OpenSSL to 1.1.1n for macOS installers and all Windows
+  builds.
+
+- bpo-38472: Fix GCC detection in setup.py when cross-compiling. The C
+  compiler is now run with LC_ALL=C. Previously, the detection failed with a
+  German locale.
+
+- bpo-46513: :program:`configure` no longer uses ``AC_C_CHAR_UNSIGNED``
+  macro and ``pyconfig.h`` no longer defines reserved symbol
+  ``__CHAR_UNSIGNED__``.
+
+- bpo-45925: Update Windows installer to use SQLite 3.37.2.
+
+Windows
+-------
+
+- bpo-44549: Update bzip2 to 1.0.8 in Windows builds to mitigate
+  CVE-2016-3189 and CVE-2019-12900
+
+- bpo-46948: Prevent CVE-2022-26488 by ensuring the Add to PATH option in
+  the Windows installer uses the correct path when being repaired.
+
+- bpo-46638: Ensures registry virtualization is consistently disabled. For
+  3.10 and earlier, it remains enabled (some registry writes are protected),
+  while for 3.11 and later it is disabled (registry modifications affect all
+  applications).
+
+macOS
+-----
+
+- bpo-45925: Update macOS installer to SQLite 3.37.2.
+
+IDLE
+----
+
+- bpo-46630: Make query dialogs on Windows start with a cursor in the entry
+  box.
+
+- bpo-45296: Clarify close, quit, and exit in IDLE.  In the File menu,
+  'Close' and 'Exit' are now 'Close Window' (the current one) and 'Exit' is
+  now 'Exit IDLE' (by closing all windows).  In Shell, 'quit()' and 'exit()'
+  mean 'close Shell'. If there are no other windows, this also exits IDLE.
+
+- bpo-45447: Apply IDLE syntax highlighting to `.pyi` files. Patch by Alex
+  Waygood and Terry Jan Reedy.
+
+
 What's New in Python 3.9.10 final?
 ==================================
 
