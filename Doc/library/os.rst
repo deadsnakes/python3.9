@@ -1909,7 +1909,8 @@ features:
 
    Create a directory named *path* with numeric mode *mode*.
 
-   If the directory already exists, :exc:`FileExistsError` is raised.
+   If the directory already exists, :exc:`FileExistsError` is raised. If a parent
+   directory in the path does not exist, :exc:`FileNotFoundError` is raised.
 
    .. _mkdir_modebits:
 
@@ -4623,7 +4624,7 @@ Random numbers
 
 .. function:: urandom(size)
 
-   Return a string of *size* random bytes suitable for cryptographic use.
+   Return a bytestring of *size* random bytes suitable for cryptographic use.
 
    This function returns random bytes from an OS-specific randomness source.  The
    returned data should be unpredictable enough for cryptographic applications,
