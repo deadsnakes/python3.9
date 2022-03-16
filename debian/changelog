@@ -1,3 +1,9 @@
+python3.9 (3.9.11-1+bionic1) bionic; urgency=medium
+
+  * Python 3.9.11 release.
+
+ -- Anthony Sottile <asottile@umich.edu>  Wed, 16 Mar 2022 13:27:06 -0400
+
 python3.9 (3.9.10-1+bionic1) bionic; urgency=medium
 
   * Python 3.9.10 release.
