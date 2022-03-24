@@ -2,10 +2,72 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.12 final?
+==================================
+
+*Release date: 2022-03-23*
+
+Core and Builtins
+-----------------
+
+- bpo-46968: Check for the existence of the "sys/auxv.h" header in
+  :mod:`faulthandler` to avoid compilation problems in systems where this
+  header doesn't exist. Patch by Pablo Galindo
+
+Library
+-------
+
+- bpo-47101: :const:`hashlib.algorithms_available` now lists only algorithms
+  that are provided by activated crypto providers on OpenSSL 3.0. Legacy
+  algorithms are not listed unless the legacy provider has been loaded into
+  the default OSSL context.
+
+- bpo-23691: Protect the :func:`re.finditer` iterator from re-entering.
+
+- bpo-42369: Fix thread safety of :meth:`zipfile._SharedFile.tell` to avoid
+  a "zipfile.BadZipFile: Bad CRC-32 for file" exception when reading a
+  :class:`ZipFile` from multiple threads.
+
+- bpo-38256: Fix :func:`binascii.crc32` when it is compiled to use zlib'c
+  crc32 to work properly on inputs 4+GiB in length instead of returning the
+  wrong result. The workaround prior to this was to always feed the function
+  data in increments smaller than 4GiB or to just call the zlib module
+  function.
+
+- bpo-39394: A warning about inline flags not at the start of the regular
+  expression now contains the position of the flag.
+
+- bpo-47061: Deprecate the various modules listed by :pep:`594`:
+
+  aifc, asynchat, asyncore, audioop, cgi, cgitb, chunk, crypt, imghdr,
+  msilib, nntplib, nis, ossaudiodev, pipes, smtpd, sndhdr, spwd, sunau,
+  telnetlib, uu, xdrlib
+
+- bpo-2604: Fix bug where doctests using globals would fail when run
+  multiple times.
+
+- bpo-45997: Fix :class:`asyncio.Semaphore` re-aquiring FIFO order.
+
+- bpo-47022: The :mod:`asynchat`, :mod:`asyncore` and  :mod:`smtpd` modules
+  have been deprecated since at least Python 3.6. Their documentation has
+  now been updated to note they will removed in Python 3.12 (:pep:`594`).
+
+- bpo-46421: Fix a unittest issue where if the command was invoked as
+  ``python -m unittest`` and the filename(s) began with a dot (.), a
+  ``ValueError`` is returned.
+
+- bpo-40296: Fix supporting generic aliases in :mod:`pydoc`.
+
+- bpo-14156: argparse.FileType now supports an argument of '-' in binary
+  mode, returning the .buffer attribute of sys.stdin/sys.stdout as
+  appropriate. Modes including 'x' and 'a' are treated equivalently to 'w'
+  when argument is '-'. Patch contributed by Josh Rosenberg
+
+
 What's New in Python 3.9.11 final?
 ==================================
 
-*Release date: 2022-03-15*
+*Release date: 2022-03-16*
 
 Core and Builtins
 -----------------
@@ -230,6 +292,9 @@ Build
   ``__CHAR_UNSIGNED__``.
 
 - bpo-45925: Update Windows installer to use SQLite 3.37.2.
+
+- bpo-47032: Ensure Windows install builds fail correctly with a non-zero
+  exit code when part of the build fails.
 
 Windows
 -------
