@@ -81,6 +81,7 @@ Description: Minimal subset of the Python language (version @VER@)
  be used in the boot process for some basic tasks.
  See /usr/share/doc/@PVER@-minimal/README.Debian for a list of the modules
  contained in this package.
+XB-Cnf-Visible-Pkgname: @PVER@
 
 Package: lib@PVER@-minimal
 Architecture: any
@@ -149,7 +150,7 @@ Package: lib@PVER@-testsuite
 Section: libdevel
 Architecture: all
 Depends: @PVER@ (>= ${binary:Version}), ${misc:Depends}, net-tools
-Suggests: python@PVER@-gdbm, python@PVER@-tk
+Suggests: @PVER@-gdbm, @PVER@-tk
 Description: Testsuite for the Python standard library (v@VER@)
  The complete testsuite for the Python standard library.  Note that
  a subset is found in the lib@PVER@-stdlib package, which should
@@ -173,7 +174,7 @@ Architecture: any
 Multi-Arch: allowed
 Depends: @PVER@ (= ${binary:Version}), lib@PVER@-dbg (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Recommends: gdb
-Suggests: python@PVER@-gdbm-dbg, python@PVER@-tk-dbg
+Suggests: @PVER@-gdbm-dbg, @PVER@-tk-dbg
 Description: Debug Build of the Python Interpreter (version @VER@)
  The package holds two things:
  .

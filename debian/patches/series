@@ -26,3 +26,5 @@ pydoc-use-pager.diff
 build-math-object.diff
 argparse-no-shutil.diff
 0036-allow-older-libmpdec.patch
+0028-sysconfigdata-name.patch
+0029-destshared-location.patch
