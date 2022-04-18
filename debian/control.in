@@ -5,7 +5,7 @@ Maintainer: Matthias Klose <doko@debian.org>
 Build-Depends: debhelper (>= 9), @bd_dpkgdev@
   quilt, autoconf,
   lsb-release, sharutils,
-  libreadline-dev, libncurses-dev (>= 5.3), @bd_gcc@
+  libreadline-dev, libncursesw5-dev (>= 5.3), @bd_gcc@
   zlib1g-dev, libbz2-dev, liblzma-dev,
   libgdbm-dev, libdb-dev,
   tk-dev, blt-dev (>= 2.4z), libssl-dev,
@@ -81,6 +81,7 @@ Description: Minimal subset of the Python language (version @VER@)
  be used in the boot process for some basic tasks.
  See /usr/share/doc/@PVER@-minimal/README.Debian for a list of the modules
  contained in this package.
+XB-Cnf-Visible-Pkgname: @PVER@
 
 Package: lib@PVER@-minimal
 Architecture: any

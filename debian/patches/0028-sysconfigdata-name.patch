@@ -1,7 +1,13 @@
 From: Anthony Sottile <asottile@umich.edu>
-Date: Sun, 11 Oct 2020 18:24:07 -0700
+Date: Sat, 16 Apr 2022 15:24:04 -0400
 Subject: sysconfigdata-name
 
+Description: Don't encode the MACHDEP into the _sysconfigdata file name.
+ Unfortunately on KFreeBSD MACHDEP includes the kernel version, so you end up
+ with a changing MACHDEP.
+
+Bug-cpython: https://bugs.python.org/issue37561
+Forwarded: no
 ---
  Lib/distutils/sysconfig.py | 3 +--
  Lib/sysconfig.py           | 3 +--
@@ -10,7 +16,7 @@ Subject: sysconfigdata-name
  4 files changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/Lib/distutils/sysconfig.py b/Lib/distutils/sysconfig.py
-index d15e9b2..35314d3 100644
+index bbb2ae4..c6d9b48 100644
 --- a/Lib/distutils/sysconfig.py
 +++ b/Lib/distutils/sysconfig.py
 @@ -465,9 +465,8 @@ def _init_posix():
@@ -40,7 +46,7 @@ index f3dd3c6..bd91dc3 100644
      ))
  
 diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 4f828f4..84c7852 100644
+index 895f9a3..4d816f0 100644
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
 @@ -1547,8 +1547,10 @@ libinstall:	build_all $(srcdir)/Modules/xxmodule.c

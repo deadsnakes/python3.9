@@ -151,6 +151,7 @@ are:
   traceback		module
   tracemalloc		module
   types			module
+  typing		module
   unicodedata		extension
   urllib		package
   uu			module
