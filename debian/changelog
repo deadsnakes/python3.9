@@ -1,3 +1,9 @@
+python3.9 (3.9.12-1+jammy1) jammy; urgency=medium
+
+  * Repackage focal for jammy.
+
+ -- Anthony Sottile <asottile@umich.edu>  Mon, 18 Apr 2022 19:47:12 -0400
+
 python3.9 (3.9.12-1+focal2) focal; urgency=medium
 
   * Sync with debian upstream.
