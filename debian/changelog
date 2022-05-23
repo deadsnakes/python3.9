@@ -1,3 +1,9 @@
+python3.9 (3.9.13-1+jammy1) jammy; urgency=medium
+
+  * Python 3.9.13 release.
+
+ -- Anthony Sottile <asottile@umich.edu>  Mon, 23 May 2022 17:57:12 -0400
+
 python3.9 (3.9.12-1+jammy2) jammy; urgency=medium
 
   * Repackage bionic for jammy.
