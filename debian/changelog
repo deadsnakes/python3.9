@@ -1,3 +1,9 @@
+python3.9 (3.9.14-1+bionic1) bionic; urgency=medium
+
+  * Python 3.9.14 release.
+
+ -- Anthony Sottile (deadsnakes) <asottile+deadsnakes@umich.edu>  Wed, 07 Sep 2022 23:43:56 +0000
+
 python3.9 (3.9.13-1+bionic1) bionic; urgency=medium
 
   * Python 3.9.13 release.
