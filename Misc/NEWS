@@ -2,6 +2,74 @@
 Python News
 +++++++++++
 
+What's New in Python 3.9.14 final?
+==================================
+
+*Release date: 2022-09-06*
+
+Security
+--------
+
+- gh-issue-95778: Converting between :class:`int` and :class:`str` in bases
+  other than 2 (binary), 4, 8 (octal), 16 (hexadecimal), or 32 such as base
+  10 (decimal) now raises a :exc:`ValueError` if the number of digits in
+  string form is above a limit to avoid potential denial of service attacks
+  due to the algorithmic complexity. This is a mitigation for
+  `CVE-2020-10735
+  <https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-10735>`_.
+
+  This new limit can be configured or disabled by environment variable,
+  command line flag, or :mod:`sys` APIs. See the :ref:`integer string
+  conversion length limitation <int_max_str_digits>` documentation.  The
+  default limit is 4300 digits in string form.
+
+  Patch by Gregory P. Smith [Google] and Christian Heimes [Red Hat] with
+  feedback from Victor Stinner, Thomas Wouters, Steve Dower, Ned Deily, and
+  Mark Dickinson.
+
+- gh-issue-87389: :mod:`http.server`: Fix an open redirection vulnerability
+  in the HTTP server when an URI path starts with ``//``.  Vulnerability
+  discovered, and initial fix proposed, by Hamza Avvan.
+
+Core and Builtins
+-----------------
+
+- gh-issue-93065: Fix contextvars HAMT implementation to handle iteration
+  over deep trees.
+
+  The bug was discovered and fixed by Eli Libman. See
+  `MagicStack/immutables#84
+  <https://github.com/MagicStack/immutables/issues/84>`_ for more details.
+
+Library
+-------
+
+- gh-issue-94821: Fix binding of unix socket to empty address on Linux to
+  use an available address from the abstract namespace, instead of "\0".
+
+- gh-issue-91810: Suppress writing an XML declaration in open files in
+  ``ElementTree.write()`` with ``encoding='unicode'`` and
+  ``xml_declaration=None``.
+
+- bpo-45393: Fix the formatting for ``await x`` and ``not x`` in the
+  operator precedence table when using the :func:`help` system.
+
+- bpo-46197: Fix :mod:`ensurepip` environment isolation for subprocess
+  running ``pip``.
+
+Tests
+-----
+
+- gh-issue-95280: Fix problem with ``test_ssl`` ``test_get_ciphers`` on
+  systems that require perfect forward secrecy (PFS) ciphers.
+
+- gh-issue-94208: ``test_ssl`` is now checking for supported TLS version and
+  protocols in more tests.
+
+- bpo-47016: Create a GitHub Actions workflow for verifying bundled pip and
+  setuptools. Patch by Illia Volochii and Adam Turner.
+
+
 What's New in Python 3.9.13 final?
 ==================================
 
