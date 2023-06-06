@@ -2,7 +2,6 @@ python3.9
 =========
 
 builds are currently supported for:
-- bionic
 - focal
 - jammy
 
