@@ -229,7 +229,7 @@ index e7a4029..24bf2f7 100755
              object.__name__ not in ('xml.etree', 'test.pydoc_mod')):
              if docloc.startswith(("http://", "https://")):
 diff --git a/Lib/site.py b/Lib/site.py
-index 9e617af..4b3d4c0 100644
+index 54ffc4f..db3cea8 100644
 --- a/Lib/site.py
 +++ b/Lib/site.py
 @@ -7,12 +7,18 @@
@@ -252,7 +252,7 @@ index 9e617af..4b3d4c0 100644
  If a file named "pyvenv.cfg" exists one directory above sys.executable,
  sys.prefix and sys.exec_prefix are set to that directory and
  it is also checked for site-packages (sys.base_prefix and
-@@ -340,10 +346,20 @@ def getsitepackages(prefixes=None):
+@@ -349,10 +355,20 @@ def getsitepackages(prefixes=None):
  
          if os.sep == '/':
              for libdir in libdirs:
@@ -278,10 +278,10 @@ index 9e617af..4b3d4c0 100644
              sitepackages.append(prefix)
  
 diff --git a/Lib/test/test_site.py b/Lib/test/test_site.py
-index 3d25d7e..a86177f 100644
+index e578cd7..e129c5e 100644
 --- a/Lib/test/test_site.py
 +++ b/Lib/test/test_site.py
-@@ -272,16 +272,16 @@ class HelperFunctionsTests(unittest.TestCase):
+@@ -311,16 +311,16 @@ class HelperFunctionsTests(unittest.TestCase):
          if os.sep == '/':
              # OS X, Linux, FreeBSD, etc
              if sys.platlibdir != "lib":
